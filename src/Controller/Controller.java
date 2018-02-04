@@ -279,8 +279,9 @@ public class Controller {
      * @throws DuplicateEntryException
      * @throws InsufficientSpotsException
      */
-    public ArrayList <EntryDjikstra> shortestPath (Trip trip) throws NotFoundException, InexistentEntryException, DuplicateEntryException, InsufficientSpotsException{
+    public Iterator shortestPath (String cpf, String tripName) throws NotFoundException, InexistentEntryException, DuplicateEntryException, InsufficientSpotsException{
 
+        Trip trip = this.searchTrip(cpf, tripName);
         ArrayList spots = trip.getSpots();
         if(spots.size() < 2){
             throw new InsufficientSpotsException();
@@ -302,30 +303,6 @@ public class Controller {
             }
             start = end;  
         }
-        return finalPath;
+        return finalPath.iterator();
     } 
-    
-    /**
-     *
-     * @param cpf
-     * @param tripName
-     * @return
-     * @throws NotFoundException
-     * @throws InexistentEntryException
-     * @throws DuplicateEntryException
-     * @throws InsufficientSpotsException
-     */
-    public Iterator shortestPath(String cpf, String tripName) throws NotFoundException, InexistentEntryException, InexistentEntryException, DuplicateEntryException, InsufficientSpotsException{
-        Trip trip = this.searchTrip(cpf, tripName);
-        
-        ArrayList <EntryDjikstra> entries = this.shortestPath(trip);
-
-        ArrayList <Vertex> vertexs = new ArrayList();
-        for(EntryDjikstra u : entries){
-            vertexs.add(u.getCur());
-            System.out.println(vertexs.get(0));
-        }
-        System.out.println(vertexs.size());
-        return vertexs.iterator();
-    }
 }
