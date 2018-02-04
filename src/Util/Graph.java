@@ -3,10 +3,12 @@ package Util;
 
 import Model.*;
 import Exceptions.*;
-import java.util.Iterator;
-import java.util.Stack;
+import java.util.*;
 
-
+/**
+ *
+ * @author Jaevillen
+ */
 public class Graph implements IGraph{
     
     private int numVertex;
@@ -14,13 +16,19 @@ public class Graph implements IGraph{
     private HashSet vertex;
     private HashSet edges;
     
-
+    /**
+     * The Contructor of the class.
+     */
     public Graph(){
         vertex = new HashSet();  
         edges = new HashSet();
     }
 
-
+    /**
+     * Method that add a Vertex in the Graph.
+     * @param key The Key of the Object to be insert.
+     * @throws DuplicateEntryException If there's already an Object with the Key informed.
+     */
     @Override
     public void addVertex(Object key) throws DuplicateEntryException{
         Vertex newVertex = new Vertex(key);
@@ -28,7 +36,10 @@ public class Graph implements IGraph{
         numVertex++;
     }
 
-
+    /**
+     * Method that returns an Iterator for the HashSet that organizes the vertices.
+     * @return An Iteterator.
+     */
     @Override
     public Iterator vertex() {
         return new MyItVertex();         
@@ -50,12 +61,22 @@ public class Graph implements IGraph{
         }
     }
 
+    /**
+     * Method that returns the number of vertices in the Graph.
+     * @return The number of vertices in the Graph.
+     */
     @Override
     public int numVertex() {
         return numVertex;
     }
     
-
+    /**
+     * Method that removes vertices that are in the Graph.
+     * @param key The Key of the vertex to be removed.
+     * @throws EmptyHashException If the HashSet is empty.
+     * @throws InexistentEntryException If there's no vertex with the key informed in the HashSet.
+     * @throws DontHaveAdjacenciesException
+     */
     @Override
     public void removeVertex(Object key) throws EmptyHashException, InexistentEntryException, DontHaveAdjacenciesException{
         Vertex verify = (Vertex)vertex.get(key);
@@ -84,7 +105,16 @@ public class Graph implements IGraph{
         }    
     }
 
-
+    /**
+     * Method that add an Edge between two vertices.
+     * @param vertexA The first Vertex.
+     * @param vertexB The second Vertex.
+     * @param data The weight of the Edge.
+     * @throws DuplicateEntryException 
+     * @throws AlreadyHasAdjacency If there's already an Edge between the vertices informed.
+     * @throws InexistentVertexException If some of two vertices doesn't exist in the Graph. 
+     * @throws LoopIsNotAllowedException If the two vertices are the same.
+     */
     @Override
     public void addEdge(Object vertexA, Object vertexB, Object data) throws DuplicateEntryException, AlreadyHasAdjacency, InexistentVertexException, LoopIsNotAllowedException{
         
@@ -140,7 +170,13 @@ public class Graph implements IGraph{
         }
     }
 
-
+    /**
+     * Method that search an Edge.
+     * @param vertexA One of the two vertices.
+     * @param vertexB Another of the two vertices.
+     * @return The Edge found.
+     * @throws InexistentEntryException If there's no Edge between the two vertices informed.
+     */
     @Override
     public Edge getEdge(Object vertexA, Object vertexB) throws InexistentEntryException{
         Vertex a = new Vertex(vertexA);
@@ -154,11 +190,24 @@ public class Graph implements IGraph{
         throw new InexistentEntryException();
     }
     
-
+    /**
+     * Method that returns a Key of a Entry of the HashSet with the vertices.
+     * 
+     * @param key The Key of the Vertex searched.
+     * @return The Key found.
+     * @throws InexistentEntryException If there's no Vertex in the HashSet of Vertices with the Key informed.
+     */
     public Object getKey(Object key) throws InexistentEntryException{
        return ((Vertex) this.getVertex(key)).getVertex();  
     }
   
+    /**
+     * Method that returns a Vertex of the HashSet with the vertices.
+     * 
+     * @param key The key of the Vertex searched.
+     * @return The Vertex found.
+     * @throws InexistentEntryException If there's no Vertex in the HashSet with the key informed.
+     */
     public Object getVertex(Object key) throws InexistentEntryException{
         Vertex searchVertex = new Vertex(key);
         
@@ -167,6 +216,10 @@ public class Graph implements IGraph{
        return ret;  
     }
 
+    /**
+     * Method that returns an Iterator for the HashSet that contais all edges registered.
+     * @return An Iterator.
+     */
     @Override
     public Iterator edges() {
         return new MyItEdges();
@@ -187,12 +240,21 @@ public class Graph implements IGraph{
         }
     }
 
-
+    /**
+     * The number of edges that are registered in the Graph.
+     * @return The number of edges the Graph.
+     */
     @Override
     public int numEdges() {
         return numEdges;
     }
 
+    /**
+     * Method that removes an Edge.
+     * @param removed The edge to be removed.
+     * @throws EmptyHashException If the HashSet with the Edges is empty.
+     * @throws InexistentEntryException If the Edge informed doesn't exist.
+     */
     @Override
     public void removeEdge(Edge removed) throws EmptyHashException, InexistentEntryException{
         Vertex oneVertex = removed.getA();
@@ -203,13 +265,19 @@ public class Graph implements IGraph{
         otherVertex.getAdjacency().remove(oneVertex);
     }
     
-
-    public HashMap shortestPath(Object obj) throws InexistentEntryException, DuplicateEntryException{
+    /**
+     * Method that verifies the shortest paths between the vertices of the Graph.
+     * @param keyStart The Key of the first vertex to be analyzed.
+     * @return A HashMap with the shortest paths.
+     * @throws InexistentEntryException If there's no Vertex with the Key informed.
+     * @throws DuplicateEntryException
+     */
+    public HashMap shortestPath(Object keyStart) throws InexistentEntryException, DuplicateEntryException{
         
         HashMap shortestPath = new HashMap();
         FilaPrioridade queue = new FilaPrioridade(10);
         
-        Vertex v = (Vertex) this.getVertex(obj);
+        Vertex v = (Vertex) this.getVertex(keyStart);
         queue.add(new EntryDjikstra(v, null, 0));
         
         while(!queue.isEmpty()){
@@ -249,6 +317,14 @@ public class Graph implements IGraph{
         return shortestPath;  
     }
     
+    /**
+     * Method that analyze the shortest route between two points. 
+     * @param start The initial point.
+     * @param end The ending point.
+     * @param paths A HashMap with the shortest paths of the Graph.
+     * @return A Stack with the points of the shortest route.
+     * @throws InexistentEntryException
+     */
     public Stack <EntryDjikstra> path (Object start, Object end, HashMap paths) throws InexistentEntryException{
         
         Stack <EntryDjikstra> stack = new Stack();
@@ -264,24 +340,41 @@ public class Graph implements IGraph{
         return stack;
     } 
 
+    /**
+     *
+     * @param vertex
+     * @return
+     */
     @Override
     public Iterator outGoingEdges(Object vertex) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-
+    /**
+     *
+     * @param vertex
+     * @return
+     */
     @Override
     public int outDegree(Object vertex) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
- 
+    /**
+     *
+     * @param vertex
+     * @return
+     */
     @Override
     public Iterator incomingEdges(Object vertex) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-   
+    /**
+     *
+     * @param vertex
+     * @return
+     */
     @Override
     public int inDegree(Object vertex) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
