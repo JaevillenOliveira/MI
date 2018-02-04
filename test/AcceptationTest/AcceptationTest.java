@@ -13,7 +13,6 @@ import org.junit.Test;
 import Model.*;
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Iterator;
 
@@ -25,6 +24,7 @@ public class AcceptationTest {
     
     private final Controller controller;
     private City capela, novaFatima, riachao, itatiaia, gaviao, saoJose, capimGrosso;
+    private Intersection inter;
     
     public AcceptationTest() {
         controller = new Controller();
@@ -32,13 +32,13 @@ public class AcceptationTest {
     
     @Before
     public void setUp() {
-        
-        
+ 
     }
     
     @Test
     public void testNewUser() throws DuplicatedDataException, NoSuchAlgorithmException, UnsupportedEncodingException{
-        controller.newUser("Almir Neto", "123456", "123456789", "teste@gmail.com");
+        User user = controller.newUser("Almir Neto", "123456", "123456789", "teste@gmail.com");
+        Assert.assertEquals("123456789", user.getCpf());
     }
     
     @Test (expected = DuplicatedDataException.class)
@@ -75,13 +75,20 @@ public class AcceptationTest {
         capimGrosso = controller.addCity("Capim Grosso", 22.2, 12.1, 402);
         itatiaia = controller.addCity("Itatiaia", 22.2, 12.1, 500);
         
-        Assert.assertEquals("CAPELA",capela.getName());
-        Assert.assertEquals("NOVA FÁTIMA", novaFatima.getName());
-        Assert.assertEquals("GAVIÃO", gaviao.getName());
-        Assert.assertEquals("SÃO JOSÉ",saoJose.getName() );
-        Assert.assertEquals("RIACHÃO", riachao.getName());
-        Assert.assertEquals("CAPIM GROSSO", capimGrosso.getName());
-        Assert.assertEquals("ITATIAIA", itatiaia.getName());
+        Assert.assertEquals("CAPELA", controller.searchCity(300).getName());
+        Assert.assertEquals("NOVA FÁTIMA", controller.searchCity(301).getName());
+        Assert.assertEquals("GAVIÃO", controller.searchCity(310).getName());
+        Assert.assertEquals("SÃO JOSÉ",controller.searchCity(350).getName());
+        Assert.assertEquals("RIACHÃO", controller.searchCity(400).getName());
+        Assert.assertEquals("CAPIM GROSSO", controller.searchCity(402).getName());
+        Assert.assertEquals("ITATIAIA", controller.searchCity(500).getName());
+    }
+    
+    @Test
+    public void testAddIntersection() throws DuplicateEntryException, InexistentEntryException{
+        Intersection intersection  = controller.addIntersection(TypeIntersection.ROTULA, 33.2, 23.2, 10);
+        
+        Assert.assertEquals(TypeIntersection.ROTULA, controller.searchIntersection(10).getType());
     }
     
     @Test(expected = DuplicateEntryException.class)
@@ -117,28 +124,36 @@ public class AcceptationTest {
     }
     
     @Test
-    public void testAddRoadBetweenTwoCities() throws DuplicateEntryException, InexistentEntryException, AlreadyHasAdjacency, InexistentVertexException, LoopIsNotAllowedException{
+    public void testAddRoadBetweenTwoCitiesOrIntersections() throws DuplicateEntryException, InexistentEntryException, AlreadyHasAdjacency, InexistentVertexException, LoopIsNotAllowedException{
         capela = controller.addCity("Capela", 22.2, 12.1, 300);
-        
         gaviao =  controller.addCity("Gavião", 22.2, 12.1, 310);
+        inter = controller.addIntersection(TypeIntersection.ROTULA, 34.3, 23.2, 10);
         
-        controller.addRoad(300, 310, 50);
+        capela = controller.searchCity(300);
+        gaviao = controller.searchCity(310);
+        inter = controller.searchIntersection(10);
+        
+        controller.addRoad(capela, gaviao, 50);
+        controller.addRoad(inter, capela, 30.0);
+        controller.addRoad(inter, gaviao, 40.8);
     }
     
     @Test (expected = LoopIsNotAllowedException.class)
     public void testAddRoadBetweenTheSameCity() throws DuplicateEntryException, InexistentEntryException, AlreadyHasAdjacency, InexistentVertexException, LoopIsNotAllowedException{
         
         capela = controller.addCity("Capela", 22.2, 12.1, 300);
+        City cityA = controller.searchCity(300);
         
-        controller.addRoad(300, 300, 50);
+        controller.addRoad(cityA, cityA, 50);
     }
     
-    @Test (expected = InexistentVertexException.class)
+    @Test (expected = InexistentEntryException.class)
     public void testAddRoadBetweenACityThatDoesntExist() throws InexistentEntryException, DuplicateEntryException, AlreadyHasAdjacency, LoopIsNotAllowedException, InexistentVertexException{
         
         capela = controller.addCity("Capela", 22.2, 12.1, 300);
-        
-        controller.addRoad(300, 13247, 50);
+        City cityA = controller.searchCity(12);
+        City cityB = controller.searchCity(300);
+        controller.addRoad(cityA, cityB, 50);
     }
     
     @Test (expected = AlreadyHasAdjacency.class)
@@ -148,9 +163,12 @@ public class AcceptationTest {
         
         gaviao =  controller.addCity("Gavião", 22.2, 12.1, 310);
         
-        controller.addRoad(300, 310, 50);
+        City cityA = controller.searchCity(310);
+        City cityB = controller.searchCity(300);
         
-        controller.addRoad(310, 300, 150);
+        controller.addRoad(cityA, cityB, 50);
+        
+        controller.addRoad(cityA, cityB, 150);
     }
     
     @Test
@@ -206,11 +224,17 @@ public class AcceptationTest {
         capimGrosso = controller.addCity("Capim Grosso", 22.2, 12.1, 402);
         itatiaia = controller.addCity("Itatiaia", 22.2, 12.1, 500);
 
-        controller.addRoad(301, 300, 20.0);
-        controller.addRoad(310, 301, 30.0);
-        controller.addRoad(310, 300, 50.5);
-        controller.addRoad(402, 310, 34.2);
-        controller.addRoad(402, 500, 400.4);
+        gaviao = controller.searchCity(310);
+        capela = controller.searchCity(300);
+        capimGrosso = controller.searchCity(402);
+        itatiaia = controller.searchCity(500);
+        novaFatima = controller.searchCity(301);
+        
+        controller.addRoad(novaFatima, capela, 20.0);
+        controller.addRoad(gaviao, novaFatima, 30.0);
+        controller.addRoad(gaviao, capela, 50.5);
+        controller.addRoad(capimGrosso, gaviao, 34.2);
+        controller.addRoad(capimGrosso, itatiaia, 400.4);
         
         controller.newUser("Almir Neto", "123456", "123456789", "teste@gmail.com");
         
