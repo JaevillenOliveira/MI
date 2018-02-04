@@ -18,6 +18,33 @@ public class Intersection extends Spot{
         this.type = type;
     }
     
+    public Intersection(int code){
+        super (code);
+    }
+
+    public TypeIntersection getType() {
+        return type;
+    }
+    
+      @Override
+    public int hashCode(){
+        return 31 * this.getCode() * 47;
+    }
+    
+    @Override
+    public boolean equals(Object obj){
+        if(obj instanceof Intersection){
+            Intersection inter = (Intersection)obj;
+        
+            if(this.getCode() == inter.getCode()){
+                return true;
+            }
+        }
+        
+        return false;
+    }
+    
+    
  
 
 }
