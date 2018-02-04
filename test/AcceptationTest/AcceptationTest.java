@@ -212,6 +212,7 @@ public class AcceptationTest {
         controller.addRoad(301, 300, 20.0);
         controller.addRoad(310, 301, 30.0);
         controller.addRoad(310, 300, 50.5);
+        controller.addRoad(402, 300, 34.2);
         
         Calendar data = Calendar.getInstance();
         
@@ -221,7 +222,7 @@ public class AcceptationTest {
         Assert.assertEquals(capela, city);
         city = controller.insertCityInTrip("123456789", "Rolê pra Cabuçu",data , data, 402);
         
-        controller.shortestPath("123456789", "Rolê pra Cabuçu");
+       Iterator it = controller.shortestPath("123456789", "Rolê pra Cabuçu");
 
         
     }
