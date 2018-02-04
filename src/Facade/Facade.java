@@ -11,12 +11,14 @@ import Exceptions.DuplicateEntryException;
 import Exceptions.DuplicatedDataException;
 import Exceptions.InexistentEntryException;
 import Exceptions.InexistentVertexException;
+import Exceptions.InsufficientSpotsException;
 import Exceptions.LoopIsNotAllowedException;
 import Exceptions.NotFoundException;
 import Model.*;
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Calendar;
+import java.util.Iterator;
 
 /**
  *
@@ -58,5 +60,8 @@ public class Facade {
         return controller.insertCityInTrip(cpf, tripName, in, out, code);
     }
     
+    public Iterator shortestPath(String cpf, String tripName) throws NotFoundException, InexistentEntryException, DuplicateEntryException, InsufficientSpotsException{
+        return controller.shortestPath(cpf, tripName);
+    }
     
 }
