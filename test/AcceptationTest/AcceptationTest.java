@@ -11,9 +11,9 @@ import junit.framework.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import Model.*;
-import Util.*;
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Iterator;
 
@@ -23,7 +23,7 @@ import java.util.Iterator;
  */
 public class AcceptationTest {
     
-    private Controller controller;
+    private final Controller controller;
     private City capela, novaFatima, riachao, itatiaia, gaviao, saoJose, capimGrosso;
     
     public AcceptationTest() {
@@ -194,8 +194,9 @@ public class AcceptationTest {
         Assert.assertEquals(capela, city);
     }
     
+  
     @Test
-    public void testShortestPath() throws DuplicateEntryException, NotFoundException, DuplicatedDataException, NoSuchAlgorithmException, UnsupportedEncodingException, AlreadyHasAdjacency, InexistentVertexException, LoopIsNotAllowedException, InexistentEntryException, InsufficientSpotsException{
+    public void shortestPath() throws DuplicateEntryException, DuplicatedDataException, NoSuchAlgorithmException, UnsupportedEncodingException, NotFoundException, AlreadyHasAdjacency, InexistentVertexException, LoopIsNotAllowedException, InexistentEntryException, InsufficientSpotsException{
         
         capela = controller.addCity("Capela", 22.2, 12.1, 300);
         novaFatima = controller.addCity("Nova Fátima", 22.2, 12.1, 301);
@@ -204,15 +205,16 @@ public class AcceptationTest {
         riachao = controller.addCity("Riachão", 22.2, 12.1, 400);
         capimGrosso = controller.addCity("Capim Grosso", 22.2, 12.1, 402);
         itatiaia = controller.addCity("Itatiaia", 22.2, 12.1, 500);
-        
-        controller.newUser("Almir Neto", "123456", "123456789", "teste@gmail.com");
-        
-        controller.startTrip("123456789", "Rolê pra Cabuçu");
 
         controller.addRoad(301, 300, 20.0);
         controller.addRoad(310, 301, 30.0);
         controller.addRoad(310, 300, 50.5);
-        controller.addRoad(402, 300, 34.2);
+        controller.addRoad(402, 310, 34.2);
+        controller.addRoad(402, 500, 400.4);
+        
+        controller.newUser("Almir Neto", "123456", "123456789", "teste@gmail.com");
+        
+        controller.startTrip("123456789", "Rolê pra Cabuçu");
         
         Calendar data = Calendar.getInstance();
         
@@ -221,9 +223,27 @@ public class AcceptationTest {
         city = controller.insertCityInTrip("123456789", "Rolê pra Cabuçu",data , data, 300);
         Assert.assertEquals(capela, city);
         city = controller.insertCityInTrip("123456789", "Rolê pra Cabuçu",data , data, 402);
-        
-       Iterator it = controller.shortestPath("123456789", "Rolê pra Cabuçu");
+        city = controller.insertCityInTrip("123456789", "Rolê pra Cabuçu",data , data, 500);
 
+        Iterator it = controller.shortestPath("123456789", "Rolê pra Cabuçu");
         
+        Assert.assertEquals("GAVIÃO", ((City)((Vertex) it.next()).getVertex()).getName());
+     
+        Assert.assertEquals("NOVA FÁTIMA",  ((City)((Vertex) it.next()).getVertex()).getName());
+      
+        Assert.assertEquals("CAPELA",  ((City)((Vertex) it.next()).getVertex()).getName());
+ 
+        Assert.assertEquals("CAPELA",  ((City)((Vertex) it.next()).getVertex()).getName());
+       
+        Assert.assertEquals("NOVA FÁTIMA",  ((City)((Vertex) it.next()).getVertex()).getName());
+       
+        Assert.assertEquals("GAVIÃO",  ((City)((Vertex) it.next()).getVertex()).getName());
+       
+        Assert.assertEquals("CAPIM GROSSO",  ((City)((Vertex) it.next()).getVertex()).getName());
+       
+        Assert.assertEquals("CAPIM GROSSO",  ((City)((Vertex) it.next()).getVertex()).getName());
+        
+        Assert.assertEquals("ITATIAIA",  ((City)((Vertex) it.next()).getVertex()).getName());
+
     }
 }
