@@ -48,8 +48,15 @@ public class Facade {
         controller.addEatPoint(code, name, adress, rate);
     }
     
-    public void addRoad (int codeA, int codeB, double km) throws DuplicateEntryException, AlreadyHasAdjacency, LoopIsNotAllowedException, InexistentVertexException{
-        controller.addRoad(codeA, codeB, km);
+    public void addRoad (City cityA, City cityB, double km) throws DuplicateEntryException, AlreadyHasAdjacency, LoopIsNotAllowedException, InexistentVertexException, InexistentEntryException{
+        controller.addRoad(cityA, cityB, km);
+    }
+    
+    public void addRoad(Intersection inter,City city, double km) throws DuplicateEntryException, AlreadyHasAdjacency, InexistentVertexException, LoopIsNotAllowedException{
+        controller.addRoad(inter, city, 0);
+    }
+    public void addRoad(Intersection interA, Intersection interB, double km) throws DuplicateEntryException, AlreadyHasAdjacency, InexistentVertexException, LoopIsNotAllowedException, InexistentVertexException, LoopIsNotAllowedException{
+        controller.addRoad(interA, interB, 0);
     }
     
     public Trip startTrip(String cpf, String tripName) throws NotFoundException, DuplicateEntryException{
