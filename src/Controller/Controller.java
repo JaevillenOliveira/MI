@@ -135,6 +135,14 @@ public class Controller {
         return city;
     }
     
+    public Intersection addIntersection (TypeIntersection type, double latitude, double longitude, int code) throws DuplicateEntryException{
+        Intersection intersection = new Intersection(type, latitude, longitude, code);
+        
+        cities.addVertex(intersection);
+        
+        return intersection;
+    }
+    
     /**
      * Method that Add a Point to Eat in a City.
      * @param code The Code of the city that the EatPoint is located.
@@ -185,12 +193,16 @@ public class Controller {
      * @throws InexistentVertexException If one of the Cities doesn't exist.
      * @throws LoopIsNotAllowedException If the Codes are headed for the same City.
      */
-    public void addRoad(int codeA, int codeB, double km) throws DuplicateEntryException, AlreadyHasAdjacency, InexistentVertexException, LoopIsNotAllowedException{
-        
-        City cityA = new City(codeA);
-        City cityB = new City(codeB);
-        
+    public void addRoad(City cityA, City cityB, double km) throws DuplicateEntryException, AlreadyHasAdjacency, InexistentVertexException, LoopIsNotAllowedException, InexistentEntryException{
         cities.addEdge(cityA, cityB, km);
+    }
+    
+    public void addRoad (Intersection inter,City city, double km) throws DuplicateEntryException, AlreadyHasAdjacency, InexistentVertexException, LoopIsNotAllowedException{
+        cities.addEdge(inter,city, km);
+    }
+    
+    public void addRoad (Intersection interA, Intersection interB, double km) throws DuplicateEntryException, AlreadyHasAdjacency, InexistentVertexException, LoopIsNotAllowedException{
+        cities.addEdge(interA, interB, km);
     }
     
     /**
@@ -219,6 +231,23 @@ public class Controller {
         }
         return trip;
     }
+    
+    public City searchCity(int code) throws InexistentEntryException{
+        City city = new City(code);
+        
+        City realCity = (City) cities.getKey(city);
+        
+        return realCity;
+    }
+    
+    public Intersection searchIntersection(int code) throws InexistentEntryException{
+        Intersection inter = new Intersection(code);
+        
+        Intersection realInter = (Intersection) cities.getKey(inter);
+        
+        return realInter;
+    }
+    
     
     /**
      * Method that search a trip by the name.
@@ -256,11 +285,8 @@ public class Controller {
      * @throws NotFoundException If doesn't exist trip with the name informed.
      */
     public City insertCityInTrip(String cpf, String tripName, Calendar in, Calendar out, int code) throws InexistentEntryException, NotFoundException{
-        
-        City city = new City(code);
-        
-        City realCity = (City) cities.getKey(city);
-
+        City realCity = this.searchCity(code);
+       
         Trip trip = this.searchTrip(cpf, tripName);
         
         PitStop ps = new PitStop(realCity, in, out);
