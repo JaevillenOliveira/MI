@@ -225,7 +225,7 @@ public class AcceptationTest {
         city = controller.insertCityInTrip("123456789", "Rolê pra Cabuçu",data , data, 402);
         city = controller.insertCityInTrip("123456789", "Rolê pra Cabuçu",data , data, 500);
 
-        Iterator it = controller.shortestPath("123456789", "Rolê pra Cabuçu").iterator();
+        Iterator it = controller.shortestPath("123456789", "Rolê pra Cabuçu");
         
         EntryDjikstra obj = (EntryDjikstra) it.next();
         Assert.assertEquals("GAVIÃO", ((City)((Vertex) obj.getCur()).getVertex()).getName());
