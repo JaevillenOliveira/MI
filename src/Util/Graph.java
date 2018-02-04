@@ -7,7 +7,7 @@ import java.util.*;
 
 /**
  *
- * @author Almir
+ * @author Almir and Jaevillen
  */
 public class Graph implements IGraph{
     
