@@ -7,7 +7,7 @@ import java.util.*;
 
 /**
  *
- * @author Jaevillen
+ * @author Almir
  */
 public class Graph implements IGraph{
     
@@ -17,7 +17,7 @@ public class Graph implements IGraph{
     private HashSet edges;
     
     /**
-     * The Contructor of the class.
+     * The Constructor of the class.
      */
     public Graph(){
         vertex = new HashSet();  
