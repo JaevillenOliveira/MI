@@ -225,25 +225,36 @@ public class AcceptationTest {
         city = controller.insertCityInTrip("123456789", "Rolê pra Cabuçu",data , data, 402);
         city = controller.insertCityInTrip("123456789", "Rolê pra Cabuçu",data , data, 500);
 
-        Iterator it = controller.shortestPath("123456789", "Rolê pra Cabuçu");
+        Iterator it = controller.shortestPath("123456789", "Rolê pra Cabuçu").iterator();
         
-        Assert.assertEquals("GAVIÃO", ((City)((Vertex) it.next()).getVertex()).getName());
+        EntryDjikstra obj = (EntryDjikstra) it.next();
+        Assert.assertEquals("GAVIÃO", ((City)((Vertex) obj.getCur()).getVertex()).getName());
      
-        Assert.assertEquals("NOVA FÁTIMA",  ((City)((Vertex) it.next()).getVertex()).getName());
+        obj = (EntryDjikstra) it.next();
+        Assert.assertEquals("NOVA FÁTIMA",((City)((Vertex) obj.getCur()).getVertex()).getName());
       
-        Assert.assertEquals("CAPELA",  ((City)((Vertex) it.next()).getVertex()).getName());
+        obj = (EntryDjikstra) it.next();
+        Assert.assertEquals("CAPELA", ((City)((Vertex) obj.getCur()).getVertex()).getName());
+        Assert.assertEquals(50.0,obj.getDistance());
  
-        Assert.assertEquals("CAPELA",  ((City)((Vertex) it.next()).getVertex()).getName());
+        obj = (EntryDjikstra) it.next();
+        Assert.assertEquals("CAPELA",  ((City)((Vertex) obj.getCur()).getVertex()).getName());
        
-        Assert.assertEquals("NOVA FÁTIMA",  ((City)((Vertex) it.next()).getVertex()).getName());
+        obj = (EntryDjikstra) it.next();
+        Assert.assertEquals("NOVA FÁTIMA", ((City)((Vertex) obj.getCur()).getVertex()).getName());
        
-        Assert.assertEquals("GAVIÃO",  ((City)((Vertex) it.next()).getVertex()).getName());
+        obj = (EntryDjikstra) it.next();
+        Assert.assertEquals("GAVIÃO",  ((City)((Vertex) obj.getCur()).getVertex()).getName());
        
-        Assert.assertEquals("CAPIM GROSSO",  ((City)((Vertex) it.next()).getVertex()).getName());
-       
-        Assert.assertEquals("CAPIM GROSSO",  ((City)((Vertex) it.next()).getVertex()).getName());
+        obj = (EntryDjikstra) it.next();
+        Assert.assertEquals("CAPIM GROSSO", ((City)((Vertex) obj.getCur()).getVertex()).getName());
+        Assert.assertEquals(84.2,obj.getDistance());
         
-        Assert.assertEquals("ITATIAIA",  ((City)((Vertex) it.next()).getVertex()).getName());
-
+        obj = (EntryDjikstra) it.next();
+        Assert.assertEquals("CAPIM GROSSO",((City)((Vertex) obj.getCur()).getVertex()).getName());
+        
+        obj = (EntryDjikstra) it.next();
+        Assert.assertEquals("ITATIAIA", ((City)((Vertex) obj.getCur()).getVertex()).getName());
+        Assert.assertEquals(400.4,obj.getDistance());
     }
 }
