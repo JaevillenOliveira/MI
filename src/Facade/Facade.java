@@ -19,6 +19,7 @@ import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Calendar;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  *
@@ -28,7 +29,7 @@ public class Facade {
     
     private Controller controller;
     
-    public Facade (){
+    public Facade () throws NoSuchAlgorithmException, UnsupportedEncodingException, DuplicatedDataException{
         controller = new Controller();
     }
     
@@ -36,16 +37,20 @@ public class Facade {
         return controller.newUser(name, password, cpf, email);
     }
     
-    public boolean doLogin(String cpf, String password) throws NotFoundException, NoSuchAlgorithmException, UnsupportedEncodingException{
+    public User doLogin(String cpf, String password) throws NotFoundException, NoSuchAlgorithmException, UnsupportedEncodingException{
         return controller.doLogin(cpf, password);
     }
     
-    public City addCity(String cityName, double latitude, double longitude, int code) throws DuplicateEntryException{
-        return controller.addCity(cityName, latitude, longitude, code);
+    public City addCity(String cityName, double latitude, double longitude, int code, double population) throws DuplicateEntryException{
+        return controller.addCity(cityName, latitude, longitude, code, population);
     }
     
     public void addEatPoit(int code, String name, String adress, int rate) throws InexistentEntryException{
         controller.addEatPoint(code, name, adress, rate);
+    }
+    
+    public City searchCity(int code) throws InexistentEntryException{
+        return controller.searchCity(code);
     }
     
     public void addRoad (City cityA, City cityB, double km) throws DuplicateEntryException, AlreadyHasAdjacency, LoopIsNotAllowedException, InexistentVertexException, InexistentEntryException{
@@ -69,6 +74,10 @@ public class Facade {
     
     public Iterator shortestPath(String cpf, String tripName) throws NotFoundException, InexistentEntryException, DuplicateEntryException, InsufficientSpotsException{
         return controller.shortestPath(cpf, tripName);
+    }
+    
+    public List getCities(){
+        return controller.getCities();
     }
     
 }
