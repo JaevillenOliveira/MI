@@ -5,6 +5,7 @@ import Model.Entry;
 import Exceptions.*;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  *
@@ -203,9 +204,19 @@ public class HashSet{
         LinkedList list = new LinkedList();
         for(int i = 0; i < keys.length; i++){
             if(keys[i] != null && !keys[i].equals(EMPTY)){
-                list.add(keys[i]);
+                list.add(keys[i].getKey());
             }
         }
         return list.toArray();
+    }
+    
+    public List toList(){
+        LinkedList list = new LinkedList();
+        for(int i = 0; i < keys.length; i++){
+            if(keys[i] != null && !keys[i].equals(EMPTY)){
+                list.add(keys[i].getKey());
+            }
+        }
+        return list;
     }
 }
