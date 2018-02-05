@@ -15,12 +15,6 @@ public class Edge {
     private Vertex B;
     private Object weight;
     
-    /**
-     * The constructor of the class.
-     * @param a The first Vertex.
-     * @param b The second Vertex.
-     * @param weight The weight of the Edge.
-     */
     public Edge(Vertex a, Vertex b, Object weight){
         this.A = a;
         this.B = b;

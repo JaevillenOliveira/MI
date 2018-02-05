@@ -16,12 +16,6 @@ public class PitStop{
     private Calendar timeIn;
     private Calendar timeOut;
 
-    /**
-     * The constructor of the class.
-     * @param city The Stop City. 
-     * @param timeIn The arrival date.
-     * @param timeOut The departure date.
-     */
     public PitStop(City city, Calendar timeIn, Calendar timeOut) {
         this.city = city;
         this.timeIn = timeIn;
