@@ -190,15 +190,16 @@ public class Controller {
     /**
      * Method that Add a Road Between two Cities.
      * 
-     * @param codeA The Code of the First City.
-     * @param codeB The Code of the Second City.
+     * @param cityA The First City.
+     * @param cityB The Second City.
      * @param km The lenght of the Road.
      * @throws DuplicateEntryException If there's already a Road between these Cities.
      * @throws AlreadyHasAdjacency If there's already a Road between these Cities.
      * @throws InexistentVertexException If one of the Cities doesn't exist.
      * @throws LoopIsNotAllowedException If the Codes are headed for the same City.
+     * @throws Exceptions.InexistentEntryException
      */
-    public void addRoad(City cityA, City cityB, double km) throws DuplicateEntryException, AlreadyHasAdjacency, InexistentVertexException, LoopIsNotAllowedException, InexistentEntryException{
+    public void addRoad(City cityA, City cityB, double km) throws AlreadyHasAdjacency, InexistentVertexException, LoopIsNotAllowedException, InexistentEntryException, DuplicateEntryException{
         cities.addEdge(cityA, cityB, km);
     }
     
