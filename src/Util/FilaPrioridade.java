@@ -15,28 +15,16 @@ public class FilaPrioridade implements IPriorityQueue{
     private Comparable[] data;
     private int size;
 
-    /**
-     * Constructor of the class.
-     * 
-     * @param tamanhoInicial The Initial lenght of the queue.
-     */
-    public FilaPrioridade(int tamanhoInicial){
+  
+    public FilaPrioridade(int tamanhoInicial){//Construtor recebe o tamanho inicial do array
         data = new Comparable[tamanhoInicial];
     }
 
-    /**
-     * Method that verifies if the queue is empty.
-     * @return Tru if the queue is empty.
-     */
     @Override
-    public boolean isEmpty() {
+    public boolean isEmpty() {//Verifica se a fila está vazia
        return this.size == 0;
     }
 
-    /**
-     * Method that verifies the size of the queue.
-     * @return
-     */
     @Override
     public int size() {//Retorna a quantidade de objetos da fila
         return size;
@@ -48,11 +36,6 @@ public class FilaPrioridade implements IPriorityQueue{
         data[child] = temp;//O 'pai' que estava na variável temporária passa para a antiga posição do 'filho'
     }
     
-    /**
-     *Method that add a Comparable in the queue. 
-     * 
-     * @param obj The Comparable.
-     */
     @Override
     public void add(Comparable obj) {
          if(size == data.length){//verifica se o array está no limite de armazenamento
@@ -70,11 +53,6 @@ public class FilaPrioridade implements IPriorityQueue{
         }
         size++;//Incrementa varivel de quantidade de objetos
     }
-
-    /**
-     * Method that takes the first element of the queue.
-     * @return The smaller element of the queue.
-     */
     @Override
     public Comparable peek() {//Devolve a informação do primeiro objeto da fila
         if(this.isEmpty()){//Verifica se a fila está vazia
@@ -83,12 +61,6 @@ public class FilaPrioridade implements IPriorityQueue{
         return data[0];//Retorna o objeto da primeira posição (maior)
     }
 
-    /**
-     * Method that compares which is the smaller of two elements.
-     * @param i The first element
-     * @param j The second element.
-     * @return The smaller element.
-     */
     public int min(int i, int j){//Método para descobrir qual dos dois 'filhos' de um 'pai' é o maior
         if(i < size && j < size){
             return data[i].compareTo(data[j]) < 0 ? i : j;//Compara os objetos e retorna o maior
@@ -101,11 +73,6 @@ public class FilaPrioridade implements IPriorityQueue{
         }
         return data.length;
     }
-
-    /**
-     * Method that removes the element that is in the beginning of the queue.
-     * @return The element removed.
-     */
     @Override
     public Comparable remove() {//Remove maior objeto da fila
         Comparable ret = data[0];//Variável temporária recebe maior objeto da fila
@@ -123,10 +90,6 @@ public class FilaPrioridade implements IPriorityQueue{
         return ret;//Retorna o objeto removido
     }
     
-    /**
-     * Method that returns an Iterator of the class.
-     * @return One Iterator of the class.
-     */
     public Iterator iterator(){//Devolve um iterador pra fila
         return new ArrayIterator();
     }

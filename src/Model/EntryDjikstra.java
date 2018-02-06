@@ -15,12 +15,6 @@ public class EntryDjikstra implements Comparable{
     private Vertex prev;
     private double distance;
 
-    /**
-     * Constructor of the class.
-     * @param prev The first Vertex.
-     * @param cur The second Vertex.
-     * @param distance The distance between the two Vertices.
-     */
     public EntryDjikstra(Vertex cur,Vertex prev, double distance) {
         this.cur = cur;
         this.prev = prev;

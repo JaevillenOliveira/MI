@@ -5,6 +5,7 @@ import Model.Entry;
 import Exceptions.*;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  *
@@ -31,17 +32,16 @@ public class HashSet{
      * @throws DuplicateEntryException When the Key is already in the Hash.
      */
     public void put(Object key) throws DuplicateEntryException{
-        Entry new_key = new Entry(key, null);
+        Entry entry = new Entry(key, null);
         int hashCode = Math.abs(key.hashCode() % keys.length);
+        int pos = this.searchPosition(hashCode, entry);
         
-        if(!hasEntry(hashCode)){
-            keys[hashCode] = new_key;
-            size++;
+        if(hasEntry(pos)){
+           throw new DuplicateEntryException();
         }
-        else{
-            searchPosition(hashCode, new_key);
-        }
-        if((size() / (double)keys.length) > LOAD_FACTOR){
+        keys[pos] = entry;
+        size++;
+        if((size / (double)keys.length) > LOAD_FACTOR){
             resize();
         }
     }
@@ -73,22 +73,21 @@ public class HashSet{
      * @param search The Entry that will be added in the Hash.
      * @throws DuplicateEntryException When the Key is already in the Hash.
      */
-    private void searchPosition(int position, Entry search) throws DuplicateEntryException{
-        for(int i = position; i < keys.length; i++){
-            if(keys[i] == null){
-                keys[i] = search;
-                size++;
-                return;
+    private int searchPosition(int position, Entry search) throws DuplicateEntryException{
+        int firstEmpty = -1;
+        while (keys [position] != null && !keys[position].equals(search)){
+            if (firstEmpty == -1 && keys[position].equals(EMPTY)){
+                firstEmpty = position;
             }
-            else if(keys[i].equals(EMPTY)){
-                keys[i] = search;
-                size++;
-                return;
-            }
-            else if(keys[i].equals(search)){
-                throw new DuplicateEntryException();
-            }
+            position = (position + 1) % keys.length;
         }
+        
+        if (keys[position] == null && firstEmpty != -1){
+            return firstEmpty;
+        }
+        else{
+            return position;
+        } 
     }
     /**
      * Method that removes a Key from the Hash.
@@ -118,7 +117,7 @@ public class HashSet{
      * @param key Key that will be removed from the Hash.
      */
     private void searchAndRemove(int hashCode, Object key){
-        for(int i = hashCode; i < keys.length; i++){
+        for(int i = hashCode; keys[i] != null; i = (i + 1) % keys.length){
             if(keys[i].getKey().equals(key)){
                 keys[i] = EMPTY;
                 size--;
@@ -132,8 +131,8 @@ public class HashSet{
      * @throws InexistentEntryException When the key doesn't exist in Hash.
      */
     public boolean contains(Object key) throws InexistentEntryException{
-        int hashCode = Math.abs(key.hashCode() % keys.length);
-        for(int i = hashCode; i < keys.length; i++){
+       int hashCode = Math.abs(key.hashCode() % keys.length);
+        for(int i = hashCode; keys[i] != null; i = (i + 1) % keys.length){
             if(keys[i] == null){
                 throw new InexistentEntryException();
             }
@@ -143,7 +142,7 @@ public class HashSet{
                 return true;
             }
         }
-        return false;
+        throw new InexistentEntryException();
     }
     /**
      * Method that gets and return a Key.
@@ -152,15 +151,19 @@ public class HashSet{
      * @throws InexistentEntryException When the key doesn't exist in Hash.
      */
     public Object get(Object key) throws InexistentEntryException{
+        return ((Entry) this.getElement(key)).getKey();
+    }
+    
+    private Object getElement(Object key) throws InexistentEntryException{
         int hashCode = Math.abs(key.hashCode() % keys.length);
-        for(int i = hashCode; i < keys.length; i++){
+        for(int i = hashCode; keys[i] != null; i = (i + 1) % keys.length){
             if(keys[i] == null){
                 throw new InexistentEntryException();
             }
             else if(keys[i].getKey().equals(EMPTY)){
             }
             else if(keys[i].getKey().equals(key)){
-                Object ret = keys[i].getKey();
+                Object ret = keys[i];
                 return ret;
             }
         }
@@ -173,39 +176,22 @@ public class HashSet{
     public int size(){
         return size;
     }
-    //Only for tests.
+    
     public Iterator iterator() {
-        return new myIt();
+        return toList().iterator();
     }
-    
-    private class myIt implements Iterator{
-        int position = 0;
-        @Override
-        public boolean hasNext() {
-            return position < keys.length;
-        }
 
-        @Override
-        public Object next() {
-            if(keys[position] != null && !keys[position].equals(EMPTY)){
-                return keys[position++];
-            }
-            else if(hasNext()){
-                position++;
-                next();
-            }
-            return null;
-        }
-    
-    }
-    
-    public Object[] toArray(){
+    /**
+     * Method that returns a list with all Keys.
+     * @return A List with the Keys.
+     */
+    public LinkedList toList(){
         LinkedList list = new LinkedList();
         for(int i = 0; i < keys.length; i++){
             if(keys[i] != null && !keys[i].equals(EMPTY)){
-                list.add(keys[i]);
+                list.add(keys[i].getKey());
             }
         }
-        return list.toArray();
+        return list;
     }
 }

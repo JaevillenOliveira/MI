@@ -7,8 +7,13 @@ import Util.*;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.*;
-
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Stack;
 
 /**
  *
@@ -22,9 +27,11 @@ public class Controller {
     /**
      * Constructor of the class
      */
-    public Controller(){
+    public Controller() throws NoSuchAlgorithmException, UnsupportedEncodingException, DuplicatedDataException{
+        
         users = new Tree();
         cities = new Graph();
+        addAdmin();
     }
 
     /**
@@ -41,7 +48,7 @@ public class Controller {
      */
     public User newUser(String name, String password, String cpf, String email) throws DuplicatedDataException, NoSuchAlgorithmException, UnsupportedEncodingException{
 
-        User newUser = new User(this.hashPassword(password), name, cpf, email);
+        User newUser = new User(this.hashPassword(password), name, cpf, email, UserType.USER);
         
         try{
             alreadyIsUser(newUser);
@@ -62,17 +69,17 @@ public class Controller {
      * @throws java.security.NoSuchAlgorithmException
      * @throws java.io.UnsupportedEncodingException
      */
-    public boolean doLogin(String cpf, String password) throws NotFoundException, NoSuchAlgorithmException, UnsupportedEncodingException{
+    public User doLogin(String cpf, String password) throws NotFoundException, NoSuchAlgorithmException, UnsupportedEncodingException{
         User user = new User(cpf, password);
         
         if(alreadyIsUser(user)){
             User verifyUser = getUser(cpf);
 
             if(verifyUser.getPassword().equalsIgnoreCase(this.hashPassword(password))){
-                return true;
+                return verifyUser;
             }
         }
-        return false;
+        return null;
     }
     
     /**
@@ -121,10 +128,11 @@ public class Controller {
      * @param latitude Latitude of the City.
      * @param longitude Longitude of the City.
      * @param code The Code of the City.
+     * @param population The City's Population.
      * @return The City after created.
-     * @throws DuplicateEntryException If has already a City with this Code.
+     * @throws DuplicateEntryException If has already a City with this Name.
      */
-    public City addCity(String cityName, double latitude, double longitude, int code) throws DuplicateEntryException{
+    public City addCity(String cityName, double latitude, double longitude, int code, double population) throws DuplicateEntryException{
         
         City city = new City(cityName.toUpperCase(), latitude, longitude, code);
         cities.addVertex(city); 
@@ -132,15 +140,6 @@ public class Controller {
         return city;
     }
     
-    /**
-     * Method that add a Intersection into the Graph
-     * @param type The type of the Intersection.
-     * @param latitude Latitude of the Intersection.
-     * @param longitude Longitude if the Intersection.
-     * @param code The code of the Intersection.
-     * @return The Intersection created.
-     * @throws DuplicateEntryException If has already a Intersection with the code informed.
-     */
     public Intersection addIntersection (TypeIntersection type, double latitude, double longitude, int code) throws DuplicateEntryException{
         Intersection intersection = new Intersection(type, latitude, longitude, code);
         
@@ -191,8 +190,8 @@ public class Controller {
     /**
      * Method that Add a Road Between two Cities.
      * 
-     * @param cityA The first City.
-     * @param cityB The second City.
+     * @param cityA The First City.
+     * @param cityB The Second City.
      * @param km The lenght of the Road.
      * @throws DuplicateEntryException If there's already a Road between these Cities.
      * @throws AlreadyHasAdjacency If there's already a Road between these Cities.
@@ -200,36 +199,14 @@ public class Controller {
      * @throws LoopIsNotAllowedException If the Codes are headed for the same City.
      * @throws Exceptions.InexistentEntryException
      */
-    public void addRoad(City cityA, City cityB, double km) throws DuplicateEntryException, AlreadyHasAdjacency, InexistentVertexException, LoopIsNotAllowedException, InexistentEntryException{
+    public void addRoad(City cityA, City cityB, double km) throws AlreadyHasAdjacency, InexistentVertexException, LoopIsNotAllowedException, InexistentEntryException, DuplicateEntryException{
         cities.addEdge(cityA, cityB, km);
     }
     
-    /**
-     * Method that adds a Road between a City and an Intersection.
-     * 
-     * @param inter The Intersection.
-     * @param city The City.
-     * @param km The lenght of the Road.
-     * @throws DuplicateEntryException If there's already a Road between these Points.
-     * @throws AlreadyHasAdjacency If there's already a Road between these Points.
-     * @throws InexistentVertexException If one of the Points doesn't exist.
-     * @throws LoopIsNotAllowedException If the Codes are headed for the same Point.
-     */
     public void addRoad (Intersection inter,City city, double km) throws DuplicateEntryException, AlreadyHasAdjacency, InexistentVertexException, LoopIsNotAllowedException{
         cities.addEdge(inter,city, km);
     }
     
-    /**
-     * Method that adds a Road between a two Intersections.
-     * 
-     * @param interA The firs Intersection.
-     * @param interB The second Intersection.
-     * @param km The lenght of the Road.
-     * @throws DuplicateEntryException If there's already a Road between these Points.
-     * @throws AlreadyHasAdjacency If there's already a Road between these Points.
-     * @throws InexistentVertexException If one of the Points doesn't exist.
-     * @throws LoopIsNotAllowedException If the Codes are headed for the same Point.
-     */
     public void addRoad (Intersection interA, Intersection interB, double km) throws DuplicateEntryException, AlreadyHasAdjacency, InexistentVertexException, LoopIsNotAllowedException{
         cities.addEdge(interA, interB, km);
     }
@@ -248,21 +225,19 @@ public class Controller {
         
         Trip trip = new Trip(tripName);
         
-        if(user.getTrip().contains(trip)){
-            throw new DuplicateEntryException();
+        if(user.getTrip() == null){
+            user.setTrip(new Queue());
+            user.getTrip().put(trip);
         }
-        user.getTrip().put(trip);
-        
+        else{
+            if(user.getTrip().contains(trip)){
+                throw new DuplicateEntryException();
+            }
+            user.getTrip().put(trip);
+        }
         return trip;
     }
     
-    /**
-     * Method that search a City for your code. 
-     * 
-     * @param code The code of the City.
-     * @return The City found.
-     * @throws InexistentEntryException If there's no City in the Graph with the code informed.
-     */
     public City searchCity(int code) throws InexistentEntryException{
         City city = new City(code);
         
@@ -271,13 +246,6 @@ public class Controller {
         return realCity;
     }
     
-    /**
-     * Method that search a Intersection for your code. 
-     * 
-     * @param code The code of the Intersection.
-     * @return The Intersection found.
-     * @throws InexistentEntryException If there's no Intersection in the Graph with the code informed.
-     */
     public Intersection searchIntersection(int code) throws InexistentEntryException{
         Intersection inter = new Intersection(code);
         
@@ -335,14 +303,13 @@ public class Controller {
     }
     
     /**
-     * Method that finds the shortest path for the Trip.
-     * @param cpf The CPF of the user.
-     * @param tripName The name of the Trip registered.
-     * @return The Iterator of the ArrayList with the points of the shortest route.
-     * @throws NotFoundException If there's not a Trip or an User registered in the system with the data informed.
-     * @throws InexistentEntryException If there some City in the Trip that doesn't exists in the Graph.
-     * @throws DuplicateEntryException 
-     * @throws InsufficientSpotsException If the Trip don't has a least two points.
+     *
+     * @param trip
+     * @return
+     * @throws NotFoundException
+     * @throws InexistentEntryException
+     * @throws DuplicateEntryException
+     * @throws InsufficientSpotsException
      */
     public Iterator shortestPath (String cpf, String tripName) throws NotFoundException, InexistentEntryException, DuplicateEntryException, InsufficientSpotsException{
 
@@ -370,6 +337,22 @@ public class Controller {
         }
         return finalPath.iterator();
     } 
+    private void addAdmin() throws NoSuchAlgorithmException, UnsupportedEncodingException, DuplicatedDataException{
+        
+        String pw = hashPassword("pbl4");
+        User admin = new User("admin", pw);
+        
+        users.inserir(admin);
+    }
     
-    
+    public List getCities(){
+        List<Vertex> city = cities.getAllVertex();
+        
+        List casted = new LinkedList();
+        
+        for(Vertex vertex : city){
+            casted.add(vertex.getVertex());
+        }
+        return casted;
+    }
 }

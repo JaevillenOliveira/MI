@@ -13,28 +13,16 @@ public class Queue implements IQueue{
     private Node tail; 
     private int size; 
 
-    /**
-     * Method that verifies if the queue is empty.
-     * @return True if the queue is empty.
-     */
     @Override
     public boolean isEmpty() {
         return head == null;
     }
 
-    /**
-     * Method that verifies the size of the queue.
-     * @return The size of the queue.
-     */
     @Override
     public int size() {
         return size;
     }
 
-    /**
-     * Method the insert a Object in the end of queue.
-     * @param o The Object to be insert.
-     */
     @Override
     public void put(Object o) {
         Node node = new Node(o);
@@ -49,10 +37,6 @@ public class Queue implements IQueue{
         }
     }
 
-    /**
-     * Method that removes a Object of the queue.
-     * @return The Object removed.
-     */
     @Override
     public Object poll() {
         Object ret = null;
@@ -66,10 +50,6 @@ public class Queue implements IQueue{
         return ret;
     }
 
-    /**
-     * Method that returns the first element of the queue, but no removes.
-     * @return The first element of the queue.
-     */
     @Override
     public Object peek() {
         if(!isEmpty()){
@@ -78,11 +58,6 @@ public class Queue implements IQueue{
         return null;
     }
 
-    /**
-     * Method that verifies if an Object is in the queue.
-     * @param obj The Object to be analyzed.
-     * @return True if the Object is in the Queue.
-     */
     public boolean contains(Object obj){
         if(!isEmpty()){
             Node search = head;
@@ -96,10 +71,6 @@ public class Queue implements IQueue{
         return false; 
     }
     
-    /**
-     * Method that returns an Iterator of the queue.
-     * @return An Iterator of the queue.
-     */
     public Iterator iterator(){
         return new MyIt();
     }

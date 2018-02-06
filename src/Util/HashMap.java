@@ -10,6 +10,7 @@ import Exceptions.DuplicateEntryException;
 import Exceptions.EmptyHashException;
 import Exceptions.InexistentEntryException;
 import java.util.Iterator;
+import java.util.LinkedList;
 
 /**
  *
@@ -40,14 +41,13 @@ public class HashMap{
     public void put(Object key, Object value) throws DuplicateEntryException{
         Entry entry = new Entry(key, value);
         int hashCode = Math.abs(key.hashCode() % map.length);
+        int pos = this.searchPosition(hashCode, entry);
         
-        if(!hasEntry(hashCode)){
-            map[hashCode] = entry;
-            size++;
+        if(hasEntry(pos)){
+           throw new DuplicateEntryException();
         }
-        else{
-            searchPosition(hashCode, entry);
-        }
+        map[pos] = entry;
+        size++;
         if((size / (double)map.length) > LOAD_FACTOR){
             resize();
         }
@@ -80,22 +80,21 @@ public class HashMap{
      * @param search The Entry that will be added in the Hash.
      * @throws DuplicateEntryException When the Key is already in the Hash.
      */
-    private void searchPosition(int position, Entry search) throws DuplicateEntryException{
-        for(int i = position; i < map.length; i++){
-            if(map[i] == null){
-                map[i] = search;
-                size++;
-                return;
+    private int searchPosition(int position, Entry search) throws DuplicateEntryException{
+        int firstEmpty = -1;
+        while (map [position] != null && !map[position].equals(search)){
+            if (firstEmpty == -1 && map[position].equals(EMPTY)){
+                firstEmpty = position;
             }
-            else if(map[i].equals(EMPTY)){
-                map[i] = search;
-                size++;
-                return;
-            }
-            else if(map[i].equals(search)){
-                throw new DuplicateEntryException();
-            }
+            position = (position + 1) % map.length;
         }
+        
+        if (map[position] == null && firstEmpty != -1){
+            return firstEmpty;
+        }
+        else{
+            return position;
+        } 
     }
     /**
      * Method that removes a Key from the Hash.
@@ -125,7 +124,7 @@ public class HashMap{
      * @param key Key that will be removed from the Hash.
      */
     private void searchAndRemove(int hashCode, Object key){
-        for(int i = hashCode; i < map.length; i++){
+        for(int i = hashCode; map[i] != null; i = (i + 1) % map.length){
             if(map[i].getKey().equals(key)){
                 map[i] = EMPTY;
                 size--;
@@ -140,7 +139,7 @@ public class HashMap{
      */
     public boolean contains(Object key) throws InexistentEntryException{
         int hashCode = Math.abs(key.hashCode() % map.length);
-        for(int i = hashCode; i < map.length; i++){
+        for(int i = hashCode; map[i] != null; i = (i + 1) % map.length){
             if(map[i] == null){
                 throw new InexistentEntryException();
             }
@@ -150,7 +149,7 @@ public class HashMap{
                 return true;
             }
         }
-        return false;
+        throw new InexistentEntryException();
     }
     /**
      * Method that gets and return a Entry.
@@ -160,7 +159,7 @@ public class HashMap{
      */
     public Object get(Object key) throws InexistentEntryException{
         int hashCode = Math.abs(key.hashCode() % map.length);
-        for(int i = hashCode; i < map.length; i++){
+        for(int i = hashCode; map[i] != null; i = (i + 1) % map.length){
             if(map[i] == null){
                 throw new InexistentEntryException();
             }
@@ -180,33 +179,24 @@ public class HashMap{
     public int size(){
         return size;
     }
+    
     //Only for tests.
     public Iterator iterator() {
-        return new myIt();
+        return toList().iterator();
     }
     
-    private class myIt implements Iterator{
-        int position = 0;
-        @Override
-        public boolean hasNext() {
-            return position < map.length;
-        }
-
-        @Override
-        public Object next() {
-            if(map[position] != null && !map[position].equals(EMPTY)){
-                return map[position++];
+    public LinkedList toList(){
+        LinkedList list = new LinkedList();
+        for(int i = 0; i < map.length; i++){
+            if(map[i] != null && !map[i].equals(EMPTY)){
+                list.add(map[i]);
             }
-           
-            position++;
-            return null;
         }
-    
+        return list;
     }
     
     public Entry[] toArray(){
         return map;
-    }
-  
+    } 
     
 }

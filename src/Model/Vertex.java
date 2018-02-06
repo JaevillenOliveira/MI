@@ -13,24 +13,20 @@ import Util.HashMap;
  */
 public class Vertex {
     
-    private Object obj;
+    private Object vertex;
     private HashMap adjacency;
     
-    /**
-     * Constructor of the class
-     * @param obj The Object to be stored.
-     */
-    public Vertex(Object obj){
-        this.obj = obj;
+    public Vertex(Object vertex){
+        this.vertex = vertex;
         this.adjacency = new HashMap();
     }
 
     public Object getVertex() {
-        return obj;
+        return vertex;
     }
 
-    public void setVertex(Object obj) {
-        this.obj = obj;
+    public void setVertex(Object vertex) {
+        this.vertex = vertex;
     }
 
     public HashMap getAdjacency() {
@@ -41,16 +37,11 @@ public class Vertex {
         this.adjacency = adjacency;
     }
     
-     /**
-     * Method that overwrite the Object equals and compares the object of the Vertex.
-     * @param obj The Vertex to be compared.
-     * @return True if the object of the two Vertex are equals.
-     */
     @Override
     public boolean equals(Object obj){
         if(obj instanceof Vertex){
             Vertex vertexObj = (Vertex)obj;
-            if(this.obj.equals(vertexObj.getVertex())){
+            if(this.vertex.equals(vertexObj.getVertex())){
                 return true;
             }
             return false;
@@ -58,16 +49,8 @@ public class Vertex {
         return false;
     }
     
-     /**
-     * Method that overwrite the Object hashCode and create a own HashCode for the class.
-     * @return A hashCode.
-     */
     @Override
     public int hashCode(){
-        String value = obj.toString();
-        int h = 0;
-            for (int i=0; i < value.length(); i++)
-                h = 31 * h + value.charAt(i);
-        return h;
+        return vertex.hashCode();
     }
 }

@@ -1,20 +1,11 @@
 
 package Model;
 
-/**
- *
- * @author Jaevillen
- */
 public class Entry {
     
     private Object key;
     private Object value;
     
-    /**
-     * Contructor of the class.
-     * @param key The key of the Entry.
-     * @param value The value of the Entry.
-     */
     public Entry(Object key, Object value){
         this.key = key;
         this.value = value;
@@ -35,27 +26,12 @@ public class Entry {
     public void setValue(Object value) {
         this.value = value;
     }
-
-     /**
-     * Method that overwrite the Object equals and compares the Key of the Entry.
-     * @param obj The Entry to be compared.
-     * @return True if the keys of the two Entries are equals.
-     */
     @Override
     public boolean equals(Object obj){    
         Entry comp = (Entry)obj;
-        if(key.equals(comp.getKey())){ 
-            return true;
-        }
-        else{
-            return false;
-        }
+        return key.equals(comp.getKey());
     }
     
-    /**
-     * Method that overwrite the Object hashCode and create a own HashCode for the class.
-     * @return A hashCode.
-     */
     @Override
     public int hashCode(){
         String str = key.toString();

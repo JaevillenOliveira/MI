@@ -11,11 +11,6 @@ public class EatPoint {
     private String adress;
     private Rate rate;
     
-    /**
-     * Contructor of the clas.
-     * @param name The Name of the EatPoint.
-     * @param adress The adress of the EatPoint.
-     */
     public EatPoint(String name, String adress){
         this.name = name;
         this.adress = adress; 

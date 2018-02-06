@@ -14,10 +14,6 @@ public class Trip{
     private Calendar initialDate;
     private String name;
     
-    /**
-     * Contructor of the class.
-     * @param name The name of the Trip.
-     */
     public Trip(String name){
         this.name = name;
         this.spots = new ArrayList();
@@ -42,12 +38,6 @@ public class Trip{
     public String getName() {
         return name;
     }
-    
-    /**
-    * Method that overwrite the Object equals and compares the name of the Trip.
-    * @param obj The Trip to be compared.
-    * @return True if the names of the two Trip are equals.
-    */
     
     @Override
     public boolean equals(Object obj){

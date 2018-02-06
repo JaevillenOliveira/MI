@@ -1,12 +1,8 @@
 
 package Model;
 
-import Util.*;
+import Util.Queue;
 
-/**
- *
- * @author Jaevillen
- */
 public class User implements Comparable{
     
     private String password;;
@@ -14,36 +10,25 @@ public class User implements Comparable{
     private String name;
     private String email;
     private Queue trip;
+    private UserType type;
     
-    /**
-     * Contructor of the class.
-     * @param password The password for the login.
-     * @param name The Name of the User.
-     * @param cpf The CPF of the User.
-     * @param email The email of the User.
-     */
-    public User(String password, String name, String cpf, String email){
+    public User(String password, String name, String cpf, String email, UserType type){
         this.password = password;
         this.name = name;
         this.cpf = cpf;
         this.email = email;
-        this.trip = new Queue();
+        this.type = type;
+    }
+
+    public UserType getType() {
+        return type;
     }
     
-    /**
-     * Contructor of the class.
-     * @param cpf The CPF of the User.
-     * @param password The password for the login.
-     */
     public User(String cpf, String password){
         this.cpf = cpf;
         this.password = password;
     }
     
-    /**
-     * Contructor of the class.
-     * @param cpf The CPF of the User.
-     */
     public User(String cpf){
         this.cpf = cpf;
     }
@@ -84,22 +69,18 @@ public class User implements Comparable{
         this.trip = trip;
     }
         
-    /**
-     * Method that overwrite the Object equals and compares the CPF of the User.
-     * @param obj The User to be compared.
-     * @return True if the CPFs of the two Users are equals.
-     */
     @Override
     public boolean equals(Object obj){
         User comp = (User)obj;
         
-        return this.cpf.equalsIgnoreCase(comp.getCpf());
+        if(this.cpf.equalsIgnoreCase(comp.getCpf())){
+            return true;
+        }
+        else{
+            return false;
+        }
     }
     
-    /*
-     * Method that overwrite the Object hashCode and create a own HashCode for the class.
-     * @return A hashCode.
-     */
     @Override
     public int hashCode(){
         int h = 0;
@@ -111,11 +92,21 @@ public class User implements Comparable{
     }
 
     @Override
-    public int compareTo(Object t) {
-        User o = (User) t;
-        return this.cpf.compareTo(o.getCpf());  
-        
+    public int compareTo(Object obj) {
+        if(obj instanceof User){
+            User user = (User )obj;
+            if(cpf.compareTo(user.getCpf()) < 0){
+                return -1;
+            }
+            else if(cpf.compareTo(user.getCpf()) > 0){
+                return 1;
+            }
+            else{
+                return 0;
+            }     
+        }
+        // Throw Exception if the Object isn't an User.
+        throw new RuntimeException();
     }
-
     
 }
