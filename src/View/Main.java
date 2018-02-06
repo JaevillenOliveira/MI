@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.application.Application;
 import javafx.event.*;
 import javafx.geometry.*;
@@ -108,10 +110,8 @@ public class Main extends Application{
                     alert("There's no User registered with this CPF.");
                     cpfGetter.setText("");
                     pwGetter.setText("");
-                } catch (NoSuchAlgorithmException ex) {
-                    
-                } catch (UnsupportedEncodingException ex) {
-                    
+                } catch (NoSuchAlgorithmException ex){
+                } catch (UnsupportedEncodingException ex){
                 }
                 
             }
@@ -465,13 +465,12 @@ public class Main extends Application{
         
         ComboBox firstCbox = new ComboBox();
         ComboBox secondCbox = new ComboBox();
-        
         for(City city : cities){
-            firstCbox.getItems().add(city.getName());
+            firstCbox.getItems().add(city.getCode() + "-" + city.getName());
         }
         
         for(City city : cities){
-            secondCbox.getItems().add(city.getName());
+            secondCbox.getItems().add(city.getCode() + "-" + city.getName());
         }
 
         Text roadSource = new Text("CityCode that Starts: ");
@@ -496,11 +495,17 @@ public class Main extends Application{
         Button add = new Button("Add");
         add.setOnAction((ActionEvent event)->{
             boolean isOk = true;
-            City cityA = (City)firstCbox.getSelectionModel().getSelectedItem();
-            City cityB = (City)secondCbox.getSelectionModel().getSelectedItem();
-            if(cityA.getCode() == cityB.getCode()){
-                isOk = false;
-                alert("You can't add a Road that Starts and Ends at the Same City.");
+            
+            String fullCityA = (String)firstCbox.getSelectionModel().getSelectedItem();
+            String newCityNameA = "";
+            for(int i = 0; fullCityA.charAt(i) != '-'; i++){
+                newCityNameA += fullCityA.charAt(i);
+            }
+            
+            String fullCityB = (String)secondCbox.getSelectionModel().getSelectedItem();
+            String newCityNameB = "";
+            for(int i = 0; fullCityB.charAt(i) != '-'; i++){
+                newCityNameB += fullCityB.charAt(i);
             }
             double sizeDouble = 0;
             try{
@@ -510,6 +515,47 @@ public class Main extends Application{
                 isOk = false;
                 alert("Type a Number in \"Road Lenght\" like this: X.XXX");
                 roadSizeGetter.setText("");
+            }
+            
+            int cityCodeA = 0;
+            try{
+                cityCodeA = Integer.parseInt(newCityNameA);
+            }
+            catch(NumberFormatException nfx){
+            }
+            
+            int cityCodeB = 0;
+            try{
+                cityCodeB = Integer.parseInt(newCityNameB);
+            }
+            catch(NumberFormatException nfx){
+            }
+            if(isOk == true){
+                
+                City cityA = null;
+                try {
+                    cityA = facade.searchCity(cityCodeA);
+                } catch (InexistentEntryException ex) {
+                }
+                City cityB = null;
+                try {
+                    cityB = facade.searchCity(cityCodeB);
+                } catch (InexistentEntryException ex) {
+                }
+                
+                try{
+                    facade.addRoad(cityA, cityB, sizeDouble);
+                } catch (DuplicateEntryException ex) {
+                    alert("There's already a Road between these Cities.");
+                } catch (AlreadyHasAdjacency ex) {
+                   alert("There's already a Road between these Cities. 2");
+                } catch (LoopIsNotAllowedException ex) {
+                   alert("You can't add a Road on The Same City.");
+                } catch (InexistentVertexException ex) {
+                    //Won't enter here.
+                } catch (InexistentEntryException ex) {
+                    //Won't enter here.
+                }
             }
                         
         });
@@ -539,5 +585,4 @@ public class Main extends Application{
         alert.setContentText(message);
         alert.showAndWait();
     }
-
 }
