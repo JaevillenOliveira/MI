@@ -140,6 +140,16 @@ public class Controller {
         return city;
     }
     
+    
+    /**
+     * Method that add a Intersection into the Graph
+     * @param type The type of the Intersection.
+     * @param latitude Latitude of the Intersection.
+     * @param longitude Longitude if the Intersection.
+     * @param code The code of the Intersection.
+     * @return The Intersection created.
+     * @throws DuplicateEntryException If has already a Intersection with the code informed.
+     */
     public Intersection addIntersection (TypeIntersection type, double latitude, double longitude, int code) throws DuplicateEntryException{
         Intersection intersection = new Intersection(type, latitude, longitude, code);
         
@@ -203,10 +213,32 @@ public class Controller {
         cities.addEdge(cityA, cityB, km);
     }
     
+     /**
+     * Method that adds a Road between a City and an Intersection.
+     * 
+     * @param inter The Intersection.
+     * @param city The City.
+     * @param km The lenght of the Road.
+     * @throws DuplicateEntryException If there's already a Road between these Points.
+     * @throws AlreadyHasAdjacency If there's already a Road between these Points.
+     * @throws InexistentVertexException If one of the Points doesn't exist.
+     * @throws LoopIsNotAllowedException If the Codes are headed for the same Point.
+     */
     public void addRoad (Intersection inter,City city, double km) throws DuplicateEntryException, AlreadyHasAdjacency, InexistentVertexException, LoopIsNotAllowedException{
         cities.addEdge(inter,city, km);
     }
     
+      /**
+     * Method that adds a Road between a two Intersections.
+     * 
+     * @param interA The firs Intersection.
+     * @param interB The second Intersection.
+     * @param km The lenght of the Road.
+     * @throws DuplicateEntryException If there's already a Road between these Points.
+     * @throws AlreadyHasAdjacency If there's already a Road between these Points.
+     * @throws InexistentVertexException If one of the Points doesn't exist.
+     * @throws LoopIsNotAllowedException If the Codes are headed for the same Point.
+     */
     public void addRoad (Intersection interA, Intersection interB, double km) throws DuplicateEntryException, AlreadyHasAdjacency, InexistentVertexException, LoopIsNotAllowedException{
         cities.addEdge(interA, interB, km);
     }
@@ -238,6 +270,13 @@ public class Controller {
         return trip;
     }
     
+     /**
+     * Method that search a City for your code. 
+     * 
+     * @param code The code of the City.
+     * @return The City found.
+     * @throws InexistentEntryException If there's no City in the Graph with the code informed.
+     */
     public City searchCity(int code) throws InexistentEntryException{
         City city = new City(code);
         
@@ -246,6 +285,13 @@ public class Controller {
         return realCity;
     }
     
+    /**
+     * Method that search a Intersection for your code. 
+     * 
+     * @param code The code of the Intersection.
+     * @return The Intersection found.
+     * @throws InexistentEntryException If there's no Intersection in the Graph with the code informed.
+     */
     public Intersection searchIntersection(int code) throws InexistentEntryException{
         Intersection inter = new Intersection(code);
         
@@ -302,14 +348,15 @@ public class Controller {
         return realCity;
     }
     
-    /**
-     *
-     * @param trip
-     * @return
-     * @throws NotFoundException
-     * @throws InexistentEntryException
-     * @throws DuplicateEntryException
-     * @throws InsufficientSpotsException
+   /**
+     * Method that finds the shortest path for the Trip.
+     * @param cpf The CPF of the user.
+     * @param tripName The name of the Trip registered.
+     * @return The Iterator of the ArrayList with the points of the shortest route.
+     * @throws NotFoundException If there's not a Trip or an User registered in the system with the data informed.
+     * @throws InexistentEntryException If there some City in the Trip that doesn't exists in the Graph.
+     * @throws DuplicateEntryException 
+     * @throws InsufficientSpotsException If the Trip don't has a least two points.
      */
     public Iterator shortestPath (String cpf, String tripName) throws NotFoundException, InexistentEntryException, DuplicateEntryException, InsufficientSpotsException{
 

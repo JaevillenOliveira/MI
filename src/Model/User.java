@@ -12,6 +12,13 @@ public class User implements Comparable{
     private Queue trip;
     private UserType type;
     
+    /**
+     * Contructor of the class.
+     * @param password The password for the login.
+     * @param name The Name of the User.
+     * @param cpf The CPF of the User.
+     * @param email The email of the User.
+     */
     public User(String password, String name, String cpf, String email, UserType type){
         this.password = password;
         this.name = name;
@@ -24,11 +31,21 @@ public class User implements Comparable{
         return type;
     }
     
+    /**
+     * Contructor of the class.
+     * @param cpf The CPF of the User.
+     * @param password The password for the login.
+     */
     public User(String cpf, String password){
         this.cpf = cpf;
         this.password = password;
     }
     
+     
+    /**
+     * Contructor of the class.
+     * @param cpf The CPF of the User.
+     */
     public User(String cpf){
         this.cpf = cpf;
     }
@@ -69,18 +86,22 @@ public class User implements Comparable{
         this.trip = trip;
     }
         
+    /**
+     * Method that overwrite the Object equals and compares the CPF of the User.
+     * @param obj The User to be compared.
+     * @return True if the CPFs of the two Users are equals.
+    */
     @Override
     public boolean equals(Object obj){
         User comp = (User)obj;
         
-        if(this.cpf.equalsIgnoreCase(comp.getCpf())){
-            return true;
-        }
-        else{
-            return false;
-        }
+        return this.cpf.equalsIgnoreCase(comp.getCpf());
     }
     
+    /*
+     * Method that overwrite the Object hashCode and create a own HashCode for the class.
+     * @return A hashCode.
+    */
     @Override
     public int hashCode(){
         int h = 0;

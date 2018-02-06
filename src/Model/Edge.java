@@ -15,6 +15,12 @@ public class Edge {
     private Vertex B;
     private Object weight;
     
+     /**
+     * The constructor of the class.
+     * @param a The first Vertex.
+     * @param b The second Vertex.
+     * @param weight The weight of the Edge.
+     */
     public Edge(Vertex a, Vertex b, Object weight){
         this.A = a;
         this.B = b;
@@ -45,15 +51,22 @@ public class Edge {
         this.weight = weight;
     }
     
+    
+     /**
+     * Method that overwrite the Object equals and compares the Vertices of the Edge.
+     * @param obj The Vertices to be compared.
+     * @return True if the Vertices of the two Edges are equals.
+     */
     @Override
     public boolean equals(Object obj){
         Edge ed = (Edge)obj;
-        if((ed.getA().equals(A) || ed.getA().equals(B)) && (ed.getB().equals(A) || ed.getB().equals(B))){
-            return true;
-        }
-        return false;
+        return (ed.getA().equals(A) || ed.getA().equals(B)) && (ed.getB().equals(A) || ed.getB().equals(B));
     }
     
+     /**
+     * Method that overwrite the Object hashCode and create a own HashCode for the class.
+     * @return A hashCode.
+     */
     @Override
     public int hashCode(){
         String value = weight.toString();

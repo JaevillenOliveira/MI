@@ -11,6 +11,13 @@ public class Spot {
     private double longitude;
     private int code;
 
+    
+    /**
+     * Contructor of the class.
+     * @param latitude The Latitude of the Spot.
+     * @param longitude The Longitude of the Spot.
+     * @param code The code of the Spot.
+     */
     public Spot(double latitude, double longitude, int code) {
         this.latitude = latitude;
         this.longitude = longitude;

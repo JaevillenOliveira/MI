@@ -154,6 +154,12 @@ public class HashSet{
         return ((Entry) this.getElement(key)).getKey();
     }
     
+     /**
+     * Method that gets and return a Entry.
+     * @param key Key that will ne searched in the Hash.
+     * @return The Entry, if exists.
+     * @throws InexistentEntryException When the key doesn't exist in Hash.
+     */
     private Object getElement(Object key) throws InexistentEntryException{
         int hashCode = Math.abs(key.hashCode() % keys.length);
         for(int i = hashCode; keys[i] != null; i = (i + 1) % keys.length){
