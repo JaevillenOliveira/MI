@@ -18,7 +18,7 @@ import java.util.Iterator;
 
 /**
  *
- * @author almir
+ * @author Almir and Jaevillen
  */
 public class AcceptationTest {
     
