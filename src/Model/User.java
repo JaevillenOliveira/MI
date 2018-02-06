@@ -3,6 +3,10 @@ package Model;
 
 import Util.Queue;
 
+/**
+ *
+ * @author Jaevillen
+ */
 public class User implements Comparable{
     
     private String password;;
@@ -18,6 +22,7 @@ public class User implements Comparable{
      * @param name The Name of the User.
      * @param cpf The CPF of the User.
      * @param email The email of the User.
+     * @param type The type of User
      */
     public User(String password, String name, String cpf, String email, UserType type){
         this.password = password;
