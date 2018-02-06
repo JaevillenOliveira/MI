@@ -49,11 +49,18 @@ public class City extends Spot{
     
     @Override
     public boolean equals(Object obj){
+        if(obj instanceof City){
         City city = (City)obj;
         
-        if(this.getCode() == city.getCode()){
-            return true;
+            if(this.getCode() == city.getCode()){
+                return true;
+            }
         }
         return false;
+    }
+    
+    @Override
+    public String toString(){
+        return name;
     }
 }

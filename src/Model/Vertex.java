@@ -51,10 +51,6 @@ public class Vertex {
     
     @Override
     public int hashCode(){
-        String value = vertex.toString();
-        int h = 0;
-            for (int i=0; i < value.length(); i++)
-                h = 31 * h + value.charAt(i);
-        return h;
+        return vertex.hashCode();
     }
 }
