@@ -174,43 +174,16 @@ public class HashSet{
     public int size(){
         return size;
     }
-    //Only for tests.
+    
     public Iterator iterator() {
-        return new myIt();
+        return toList().iterator();
     }
-    
-    private class myIt implements Iterator{
-        int position = 0;
-        @Override
-        public boolean hasNext() {
-            return position < keys.length;
-        }
 
-        @Override
-        public Object next() {
-            if(keys[position] != null && !keys[position].equals(EMPTY)){
-                return keys[position++];
-            }
-            else if(hasNext()){
-                position++;
-                next();
-            }
-            return null;
-        }
-    
-    }
-    
-    public Object[] toArray(){
-        LinkedList list = new LinkedList();
-        for(int i = 0; i < keys.length; i++){
-            if(keys[i] != null && !keys[i].equals(EMPTY)){
-                list.add(keys[i].getKey());
-            }
-        }
-        return list.toArray();
-    }
-    
-    public List toList(){
+    /**
+     * Method that returns a list with all Keys.
+     * @return A List with the Keys.
+     */
+    public LinkedList toList(){
         LinkedList list = new LinkedList();
         for(int i = 0; i < keys.length; i++){
             if(keys[i] != null && !keys[i].equals(EMPTY)){

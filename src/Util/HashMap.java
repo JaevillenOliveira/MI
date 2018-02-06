@@ -10,6 +10,7 @@ import Exceptions.DuplicateEntryException;
 import Exceptions.EmptyHashException;
 import Exceptions.InexistentEntryException;
 import java.util.Iterator;
+import java.util.LinkedList;
 
 /**
  *
@@ -180,33 +181,24 @@ public class HashMap{
     public int size(){
         return size;
     }
+    
     //Only for tests.
     public Iterator iterator() {
-        return new myIt();
+        return toList().iterator();
     }
     
-    private class myIt implements Iterator{
-        int position = 0;
-        @Override
-        public boolean hasNext() {
-            return position < map.length;
-        }
-
-        @Override
-        public Object next() {
-            if(map[position] != null && !map[position].equals(EMPTY)){
-                return map[position++];
+    public LinkedList toList(){
+        LinkedList list = new LinkedList();
+        for(int i = 0; i < map.length; i++){
+            if(map[i] != null && !map[i].equals(EMPTY)){
+                list.add(map[i]);
             }
-           
-            position++;
-            return null;
         }
-    
+        return list;
     }
     
     public Entry[] toArray(){
         return map;
-    }
-  
+    } 
     
 }

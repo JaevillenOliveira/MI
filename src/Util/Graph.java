@@ -4,7 +4,7 @@ package Util;
 import Model.*;
 import Exceptions.*;
 import java.util.Iterator;
-import java.util.List;
+import java.util.LinkedList;
 import java.util.Stack;
 
 
@@ -32,23 +32,7 @@ public class Graph implements IGraph{
 
     @Override
     public Iterator vertex() {
-        return new MyItVertex();         
-    }
-    
-    private class MyItVertex implements Iterator{
-        
-        private Object[] objs = vertex.toArray();
-        private int position = 0;
-        
-        @Override
-        public boolean hasNext(){
-            return position < objs.length;
-        }
-
-        @Override
-        public Object next(){
-            return objs[position++];
-        }
+        return vertex.iterator();         
     }
 
     @Override
@@ -170,24 +154,8 @@ public class Graph implements IGraph{
 
     @Override
     public Iterator edges() {
-        return new MyItEdges();
+        return edges.iterator();
     }
-    
-    private class MyItEdges implements Iterator{
-        private Object[] objs = edges.toArray();
-        private int position = 0;
-        
-        @Override
-        public boolean hasNext(){
-            return position < objs.length;
-        }
-
-        @Override
-        public Object next(){
-            return objs[position++];
-        }
-    }
-
 
     @Override
     public int numEdges() {
@@ -288,11 +256,11 @@ public class Graph implements IGraph{
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
-    public List getAllVertex(){
+    public LinkedList getAllVertex(){
         return vertex.toList();
     }
     
-    public List getAllEdges(){
+    public LinkedList getAllEdges(){
         return edges.toList();
     }
     
