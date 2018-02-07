@@ -11,6 +11,7 @@ import junit.framework.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import Model.*;
+import Exceptions.TheresNoEntryException;
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Calendar;
@@ -25,9 +26,12 @@ public class AcceptationTest {
     private final Controller controller;
     private City capela, novaFatima, riachao, itatiaia, gaviao, saoJose, capimGrosso;
     private Intersection inter;
-    
+    private Calendar date = Calendar.getInstance();
+        
     public AcceptationTest() throws NoSuchAlgorithmException, DuplicatedDataException, UnsupportedEncodingException {
         controller = new Controller();
+        date.set(10, 10, 10);
+    
     }
     
     @Before
@@ -175,16 +179,18 @@ public class AcceptationTest {
     public void testStartATrip() throws DuplicatedDataException, NoSuchAlgorithmException, UnsupportedEncodingException, DuplicateEntryException, NotFoundException{
         controller.newUser("Almir Neto", "123456", "123456789", "teste@gmail.com");
         
-        controller.startTrip("123456789", "Rolê pra Cabuçu");
+        
+        
+        controller.startTrip("123456789", "Rolê pra Cabuçu", date);
     }
     
     @Test (expected = DuplicateEntryException.class)
     public void testStartATripWithTheSameName() throws DuplicateEntryException, DuplicatedDataException, NoSuchAlgorithmException, UnsupportedEncodingException, NotFoundException{
         controller.newUser("Almir Neto", "123456", "123456789", "teste@gmail.com");
         
-        controller.startTrip("123456789", "Rolê pra Cabuçu");
+        controller.startTrip("123456789", "Rolê pra Cabuçu", date);
         
-        controller.startTrip("123456789", "Rolê pra Cabuçu");
+        controller.startTrip("123456789", "Rolê pra Cabuçu",date);
         
     }
     
@@ -192,7 +198,7 @@ public class AcceptationTest {
     public void testInsertSpotsInexistentsInTheTrip() throws DuplicateEntryException, DuplicatedDataException, NoSuchAlgorithmException, UnsupportedEncodingException, NotFoundException, InexistentEntryException{
         controller.newUser("Almir Neto", "123456", "123456789", "teste@gmail.com");
         
-        controller.startTrip("123456789", "Rolê pra Cabuçu");
+        controller.startTrip("123456789", "Rolê pra Cabuçu", date);
         Calendar data = Calendar.getInstance();
         
         controller.insertCityInTrip("123456789", "Rolê pra Cabuçu",data , data, 300);
@@ -202,7 +208,7 @@ public class AcceptationTest {
     public void testInsertSpotsInTheTripWithSucess() throws DuplicateEntryException, DuplicatedDataException, NoSuchAlgorithmException, UnsupportedEncodingException, NotFoundException, InexistentEntryException{
         controller.newUser("Almir Neto", "123456", "123456789", "teste@gmail.com");
         
-        controller.startTrip("123456789", "Rolê pra Cabuçu");
+        controller.startTrip("123456789", "Rolê pra Cabuçu", date);
         Calendar data = Calendar.getInstance();
         
         capela = controller.addCity("Capela", 22.2, 12.1, 300, 1);
@@ -214,7 +220,7 @@ public class AcceptationTest {
     
   
     @Test
-    public void shortestPath() throws DuplicateEntryException, DuplicatedDataException, NoSuchAlgorithmException, UnsupportedEncodingException, NotFoundException, AlreadyHasAdjacency, InexistentVertexException, LoopIsNotAllowedException, InexistentEntryException, InsufficientSpotsException{
+    public void shortestPath() throws DuplicateEntryException, DuplicatedDataException, NoSuchAlgorithmException, UnsupportedEncodingException, NotFoundException, AlreadyHasAdjacency, InexistentVertexException, LoopIsNotAllowedException, InexistentEntryException, InsufficientSpotsException, TheresNoEntryException{
         
         capela = controller.addCity("Capela", 22.2, 12.1, 300, 1);
         novaFatima = controller.addCity("Nova Fátima", 22.2, 12.1, 301, 1);
@@ -238,7 +244,7 @@ public class AcceptationTest {
         
         controller.newUser("Almir Neto", "123456", "123456789", "teste@gmail.com");
         
-        controller.startTrip("123456789", "Rolê pra Cabuçu");
+        controller.startTrip("123456789", "Rolê pra Cabuçu", date);
         
         Calendar data = Calendar.getInstance();
         
