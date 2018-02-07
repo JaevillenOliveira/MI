@@ -27,7 +27,10 @@ public class PitStop{
         this.timeIn = timeIn;
         this.timeOut = timeOut;
     }
-
+    
+    public PitStop(City city){
+        this.city = city;
+    }
     public City getCity() {
         return city;
     }
@@ -50,6 +53,15 @@ public class PitStop{
 
     public void setTimeOut(Calendar timeOut) {
         this.timeOut = timeOut;
+    }
+    @Override
+    public boolean equals(Object obj){
+        PitStop ps = (PitStop)obj;
+        
+        if(ps.getCity().equals(this.city)){
+            return true;
+        }
+        return false;
     }
 
 }

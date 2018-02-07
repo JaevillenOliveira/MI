@@ -7,15 +7,20 @@ import Facade.Facade;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.LinkedList;
 import javafx.application.Application;
+import javafx.collections.ObservableList;
+import javafx.collections.ObservableListBase;
 import javafx.event.*;
 import javafx.geometry.*;
 import javafx.scene.Cursor;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
@@ -30,6 +35,7 @@ import javafx.stage.Stage;
  */
 public class Main extends Application{
     
+    private static User actualUser;
     private static Facade facade;
     private static Scene main;
     private static Scene signUp;
@@ -38,6 +44,10 @@ public class Main extends Application{
     private static Scene addCityScene;
     private static Scene addRoadScene;
     private static Scene addPlaceToEatScene;
+    private static Scene createTripScene;
+    private static Scene addCityToTripScene;
+    private static Scene removeCityFromTripScene;
+    private static Scene tripsScene;
 
     /**
      * Main method.
@@ -55,7 +65,7 @@ public class Main extends Application{
         drawUserScene(primaryStage);
         drawAdminScene(primaryStage);
         drawAddCityScene(primaryStage);
-        
+        drawCreateTripScene(primaryStage);
         
         GridPane grid = new GridPane();
         grid.setAlignment(Pos.TOP_CENTER);
@@ -64,6 +74,7 @@ public class Main extends Application{
         grid.setPadding(new Insets(140, 140, 140, 140));
         
         main = new Scene(grid, 720, 650);
+        
         
         Label title = new Label("RoadTrips");
         title.setFont(Font.font("Comic Sans MS",  50));
@@ -90,18 +101,21 @@ public class Main extends Application{
                 alert("There are Empty Fields.");
             }
             else{
+                User user = null;
                 try{
-                    User user = facade.doLogin(cpfGetter.getText(), pwGetter.getText());
+                    user = facade.doLogin(cpfGetter.getText(), pwGetter.getText());
                     if(user == null){
                         alert("Password incorrect.");
                         pwGetter.setText("");
                     }
                     else if(user.getType() == UserType.USER){
+                        actualUser = user;
                         cpfGetter.setText("");
                         pwGetter.setText("");
                         primaryStage.setScene(userScene);
                     }
                     else{
+                        actualUser = user;
                         cpfGetter.setText("");
                         pwGetter.setText("");
                         primaryStage.setScene(adminScene);
@@ -112,8 +126,7 @@ public class Main extends Application{
                     pwGetter.setText("");
                 } catch (NoSuchAlgorithmException ex){
                 } catch (UnsupportedEncodingException ex){
-                }
-                
+                }  
             }
         });
         bp.setCenter(signIn);
@@ -153,7 +166,7 @@ public class Main extends Application{
         primaryStage.getIcons().add(image);
         
         primaryStage.setScene(main);
-        primaryStage.show();
+        primaryStage.show();  
     }
     
     private void drawSignUpScene(Stage primaryStage){
@@ -263,9 +276,103 @@ public class Main extends Application{
         grid.setAlignment(Pos.TOP_CENTER);
         grid.setHgap(10);
         grid.setVgap(10);
-        grid.setPadding(new Insets(60, 60, 60, 60));
+        grid.setPadding(new Insets(0, 0, 0, 0));
         
         userScene = new Scene(grid, 720, 650);
+        
+        ButtonBar btnBar = new ButtonBar();
+        
+        Button logOut = new Button("LogOut");
+        logOut.setTextFill(Color.RED);
+        logOut.setOnAction((ActionEvent event)->{
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setHeaderText(null);
+            alert.setTitle("Exit");
+            alert.setContentText("Are you Sure?");
+            alert.showAndWait();
+            ButtonType btnType = alert.getResult();
+            if(btnType.getButtonData() == ButtonData.OK_DONE){
+                primaryStage.setScene(main);
+            }
+        });
+        
+        for(int i = 0; i < 53; i++){
+            btnBar.getButtons().add(new Text());
+        }
+        Button settings = new Button("Settings");
+        btnBar.getButtons().add(settings);
+        
+        btnBar.getButtons().add(logOut);
+        grid.add(btnBar, 0, 0, 10, 1);
+         
+        Label title = new Label("User Menu");
+        title.setPadding(new Insets(60, 170, -40, 230));
+        title.setFont(Font.font("Comic Sans MS",  50));
+        title.setTextFill(Color.MEDIUMTURQUOISE);
+        grid.add(title, 0, 1, 10, 1);
+        
+        BorderPane bp = new BorderPane();
+        grid.add(bp, 0, 2, 10, 1);
+        
+        FlowPane fp = new FlowPane(Orientation.VERTICAL);
+        fp.setVgap(10);
+        fp.setHgap(10);
+        fp.setAlignment(Pos.CENTER);
+        fp.setColumnHalignment(HPos.CENTER);
+        bp.setTop(fp);
+        
+        Button createTrip = new Button("Create Trip");
+        createTrip.setMinWidth(200);
+        createTrip.setOnAction((ActionEvent event)->{
+            primaryStage.setScene(createTripScene);
+        });
+        
+        Button addCityToTrip = new Button("Add City to Trip");
+        addCityToTrip.setMinWidth(200);
+        addCityToTrip.setOnAction((ActionEvent event)->{
+            if(!facade.haveCities() && !facade.haveTrips(actualUser)){
+                alert("There's no City registered in System and There's no Trip registered in your Account.");
+            }
+            else if(!facade.haveTrips(actualUser)){
+                alert("There's no Trips registered in your account.");
+            }
+            else if(!facade.haveCities()){
+                alert("There's no City registered in System.");
+            }
+            else{
+                drawAddCityToTripScene(primaryStage);
+                primaryStage.setScene(addCityToTripScene);
+            }
+        });
+        
+        Button removeCityFromTrip = new Button("Remove City From Trip");
+        removeCityFromTrip.setMinWidth(200);
+        removeCityFromTrip.setOnAction((ActionEvent event)->{
+            if(!facade.haveTrips(actualUser)){
+                alert("There's no Trips registered in your account.");
+            }
+            else{
+                drawRemoveCityFromTripScene(primaryStage);
+                primaryStage.setScene(removeCityFromTripScene);
+            }
+        });
+        
+        Button manageTrips = new Button("Manage Trips");
+        manageTrips.setMinWidth(200);
+        manageTrips.setOnAction((ActionEvent event)->{
+            if(!facade.haveTrips(actualUser)){
+                alert("There's no Trips registered in your account.");
+            }
+            else{
+                drawTripScene(primaryStage);
+                primaryStage.setScene(tripsScene);
+            }
+        });
+        
+        fp.getChildren().add(createTrip);
+        fp.getChildren().add(addCityToTrip);
+        fp.getChildren().add(removeCityFromTrip);
+        fp.getChildren().add(manageTrips);
     }
     
     private void drawAdminScene(Stage primaryStage){
@@ -274,17 +381,42 @@ public class Main extends Application{
         grid.setAlignment(Pos.TOP_CENTER);
         grid.setHgap(10);
         grid.setVgap(10);
-        grid.setPadding(new Insets(60, 60, 60, 60));
+        grid.setPadding(new Insets(0, 0, 0, 0));
         
         adminScene = new Scene(grid, 720, 650);
         
+        ButtonBar btnBar = new ButtonBar();
+        Button logOut = new Button("LogOut");
+        logOut.setTextFill(Color.RED);
+        logOut.setOnAction((ActionEvent event)->{
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setHeaderText(null);
+            alert.setTitle("Exit");
+            alert.setContentText("Are you Sure?");
+            alert.showAndWait();
+            ButtonType btnType = alert.getResult();
+            if(btnType.getButtonData() == ButtonData.OK_DONE){
+                primaryStage.setScene(main);
+            }
+        });
+        
+        Button settings = new Button("Settings");
+        
+        for(int i = 0; i < 53; i++){
+            btnBar.getButtons().add(new Text());
+        }
+        btnBar.getButtons().add(settings);
+        btnBar.getButtons().add(logOut);
+        grid.add(btnBar, 0, 0, 10, 1);
+        
         Label title = new Label("Menu Admin");
+        title.setPadding(new Insets(60, 170, -40, 230));
         title.setFont(Font.font("Comic Sans MS",  50));
         title.setTextFill(Color.MEDIUMTURQUOISE);
-        grid.add(title, 0, 0, 2, 1);
+        grid.add(title, 0, 1, 10, 1);
         
         BorderPane bp = new BorderPane();
-        grid.add(bp, 0, 1, 2, 1);
+        grid.add(bp, 0, 2, 10, 1);
         
         FlowPane fp = new FlowPane(Orientation.VERTICAL);
         fp.setVgap(10);
@@ -302,14 +434,25 @@ public class Main extends Application{
         Button addRoad = new Button("AddRoad");
         addRoad.setMinWidth(100);
         addRoad.setOnAction((ActionEvent event)->{
-            drawAddRoadScene(primaryStage);
-            primaryStage.setScene(addRoadScene);
+            if(facade.haveCities()){
+                drawAddRoadScene(primaryStage);
+                primaryStage.setScene(addRoadScene);
+            }
+            else{
+                alert("There's no City Registered in System.");
+            }
         });
         
         Button addPlaceToEat = new Button("Add Place to Eat");
         addPlaceToEat.setMinWidth(100);
         addPlaceToEat.setOnAction((ActionEvent event)->{
-            primaryStage.setScene(addPlaceToEatScene);
+            if(facade.haveCities()){
+                drawAddPlaceToEatScene(primaryStage);
+                primaryStage.setScene(addPlaceToEatScene);
+            }
+            else{
+                alert("There's no City Registered in System.");
+            }
         });
         
         fp.getChildren().add(addCity);
@@ -461,18 +604,27 @@ public class Main extends Application{
         title.setTextFill(Color.MEDIUMTURQUOISE);
         grid.add(title, 0, 0, 2, 1);
         
-        List<City> cities = facade.getCities();
+        LinkedList<City> cities = null;
         
+        try{
+            cities = facade.getCities();
+        } catch (TheresNoCityException ex) {
+            //Shouldn't enter here.
+        }
         ComboBox firstCbox = new ComboBox();
         ComboBox secondCbox = new ComboBox();
+
+        firstCbox.setPromptText("Cities");
+            
+        secondCbox.setPromptText("Cities");
         for(City city : cities){
             firstCbox.getItems().add(city.getCode() + "-" + city.getName());
         }
-        
+
         for(City city : cities){
             secondCbox.getItems().add(city.getCode() + "-" + city.getName());
         }
-
+        
         Text roadSource = new Text("CityCode that Starts: ");
         grid.add(roadSource, 0, 2);
         
@@ -536,15 +688,20 @@ public class Main extends Application{
                 try {
                     cityA = facade.searchCity(cityCodeA);
                 } catch (InexistentEntryException ex) {
+                    //Shouldn't enter here.
                 }
                 City cityB = null;
                 try {
                     cityB = facade.searchCity(cityCodeB);
                 } catch (InexistentEntryException ex) {
+                    //Shouldn't enter here.
                 }
                 
                 try{
                     facade.addRoad(cityA, cityB, sizeDouble);
+                    alertInfo("Road added Successfully.");
+                    roadSizeGetter.setText("");
+                    primaryStage.setScene(adminScene);
                 } catch (DuplicateEntryException ex) {
                     alert("There's already a Road between these Cities.");
                 } catch (AlreadyHasAdjacency ex) {
@@ -552,9 +709,9 @@ public class Main extends Application{
                 } catch (LoopIsNotAllowedException ex) {
                    alert("You can't add a Road on The Same City.");
                 } catch (InexistentVertexException ex) {
-                    //Won't enter here.
+                    //Shouldn't enter here.
                 } catch (InexistentEntryException ex) {
-                    //Won't enter here.
+                    //Shouldn't enter here.
                 }
             }
                         
@@ -568,6 +725,556 @@ public class Main extends Application{
         
         btnBP.setLeft(add);
         btnBP.setRight(cancel); 
+        
+    }
+    
+    private void drawAddPlaceToEatScene(Stage primaryStage){
+        
+        GridPane grid = new GridPane();
+        grid.setAlignment(Pos.TOP_CENTER);
+        grid.setHgap(10);
+        grid.setVgap(10);
+        grid.setPadding(new Insets(100, 100, 100, 100));
+        
+        addPlaceToEatScene = new Scene(grid, 720, 650);
+        
+        Label title = new Label("Adding Road");
+        title.setFont(Font.font("Comic Sans MS",  50));
+        title.setTextFill(Color.MEDIUMTURQUOISE);
+        grid.add(title, 0, 0, 2, 1);
+        
+        LinkedList<City> cities = null;
+        try{
+            cities = facade.getCities();
+        } catch (TheresNoCityException ex) {
+            alert("There's no City registered in System.");
+            primaryStage.setScene(adminScene);
+        }
+        
+        ComboBox firstCbox = new ComboBox();
+        firstCbox.setPromptText("Cities");
+        
+        for(City city : cities){
+            firstCbox.getItems().add(city.getCode() + "-" + city.getName());
+        }
+        
+        Text city = new Text("Cities: ");
+        grid.add(city, 0, 2);
+        
+        grid.add(firstCbox, 1, 2);
+        
+        Text placeName = new Text("Place Name: ");
+        grid.add(placeName, 0, 4);
+        
+        TextField placeNameGetter = new TextField();
+        grid.add(placeNameGetter, 1, 4);
+        
+        Text address = new Text("Adress: ");
+        grid.add(address, 0, 6);
+        
+        TextField addressGetter = new TextField();
+        grid.add(addressGetter, 1, 6);
+        
+        Text rate = new Text("Rate: ");
+        grid.add(rate, 0, 8);
+        
+        ComboBox rateCB = new ComboBox();
+        rateCB.setPromptText("Rating");
+        
+        rateCB.getItems().add("TERRIBLE");
+        rateCB.getItems().add("POOR");
+        rateCB.getItems().add("REGULAR");
+        rateCB.getItems().add("GOOD");
+        rateCB.getItems().add("GREAT");
+        
+        grid.add(rateCB, 1, 8);
+        
+        BorderPane btnBp = new BorderPane();
+        grid.add(btnBp, 0, 10, 2, 1);
+        
+        Button add = new Button("Add");
+        add.setOnAction((ActionEvent event)->{
+            
+            boolean isOk = true;
+            
+            if(placeNameGetter.getText().isEmpty() || addressGetter.getText().isEmpty()){
+                alert("There's Empty Fields");
+                placeNameGetter.setText("");
+                addressGetter.setText("");
+            }
+            else{
+                String fullCityA = (String)firstCbox.getSelectionModel().getSelectedItem();
+                if(fullCityA == null){
+                    alert("Please, select a City on Selector Field.");
+                    isOk = false;
+                }
+                
+                int cityCode = 0;
+                
+                if(isOk == true){
+                    String newCityNameA = "";
+                    for(int i = 0; fullCityA.charAt(i) != '-'; i++){
+                        newCityNameA += fullCityA.charAt(i);
+                    }
+                    try{
+                        cityCode = Integer.parseInt(newCityNameA);
+                    }
+                    catch(NumberFormatException nfx){
+                        //Shouldn't enter here.
+                    }
+                }
+                
+                int ratingInt = 0;
+                String rating = (String)rateCB.getSelectionModel().getSelectedItem();
+                
+                if(rating == null){
+                    alert("Please, select a Rate on Selector Field.");
+                    isOk = false;
+                }
+                
+                if(isOk == true){
+                    if(rating.equals("TERRIBLE")){
+                        ratingInt = 1;
+                    }
+                    else if(rating.equals("POOR")){
+                        ratingInt = 2;
+                    }
+                    else if(rating.equals("REGULAR")){
+                        ratingInt = 3;
+                    }
+                    else if(rating.equals("GOOD")){
+                        ratingInt = 4;
+                    }
+                    else if(rating.equals("GREAT")){
+                        ratingInt = 5;
+                    }
+                
+                    try{
+                        facade.addEatPoint(cityCode, placeNameGetter.getText(), addressGetter.getText(), ratingInt);
+                        alertInfo("Place added Successfully.");
+                        placeNameGetter.setText("");
+                        addressGetter.setText("");
+                        primaryStage.setScene(adminScene);
+                    } catch (InexistentEntryException ex) {
+                        //Shouldn't enter here.
+                    }
+                }
+            }
+        });
+        btnBp.setLeft(add);
+        
+        Button cancel = new Button("Cancel");
+        cancel.setOnAction((ActionEvent event)->{
+            placeNameGetter.setText("");
+            addressGetter.setText("");
+            primaryStage.setScene(adminScene);
+        });
+        cancel.setTextFill(Color.RED);
+        btnBp.setRight(cancel);
+    }
+    
+    private void drawCreateTripScene(Stage primaryStage){
+        
+        GridPane grid = new GridPane();
+        grid.setAlignment(Pos.TOP_CENTER);
+        grid.setHgap(10);
+        grid.setVgap(10);
+        grid.setPadding(new Insets(100, 100, 100, 100));
+        
+        createTripScene = new Scene(grid, 720, 650);
+        
+        Label title = new Label("Creating Trip");
+        title.setFont(Font.font("Comic Sans MS",  50));
+        title.setTextFill(Color.MEDIUMTURQUOISE);
+        grid.add(title, 0, 0, 2, 1);
+        
+        Text name = new Text("Trip Name: ");
+        grid.add(name, 0, 4);
+        
+        TextField nameGetter = new TextField();
+        grid.add(nameGetter, 1, 4);
+        
+        Text initialDate = new Text("Initial Date: ");
+        grid.add(initialDate, 0, 6);
+        
+        DatePicker date = new DatePicker();
+        grid.add(date, 1, 6);
+        
+        BorderPane btnBp = new BorderPane();
+        grid.add(btnBp, 0, 8, 2, 1);
+        
+        Button create = new Button("Create");
+        create.setOnAction((ActionEvent event)->{
+            if(nameGetter.getText().isEmpty() || date.getValue() == null){
+                alert("There are Empty Fields.");
+            }
+            else{
+                try{
+                    LocalDate localDate = date.getValue();
+                    int day = localDate.getDayOfMonth();
+                    int month = localDate.getMonthValue();
+                    int year = localDate.getYear();
+                    
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.set(year, month, day);
+                    facade.startTrip(actualUser.getCpf(), nameGetter.getText(), calendar);
+                    alertInfo("Trip Created with Sucess.");
+                    primaryStage.setScene(userScene);
+                } catch (NotFoundException ex) {
+                    //Shouldn't enter here.
+                } catch (DuplicateEntryException ex) {
+                    alert("There's already a trip with this name.");
+                    nameGetter.setText("");
+                }
+            }
+        });
+        create.setMinWidth(100);
+        btnBp.setLeft(create);
+        
+        Button cancel = new Button("Cancel");
+        cancel.setOnAction((ActionEvent event)->{
+            nameGetter.setText("");
+            primaryStage.setScene(userScene);
+        });
+        cancel.setTextFill(Color.RED);
+        cancel.setMinWidth(100);
+        
+        btnBp.setRight(cancel);
+    }
+    
+    private void drawAddCityToTripScene(Stage primaryStage){
+        
+        GridPane grid = new GridPane();
+        grid.setAlignment(Pos.TOP_CENTER);
+        grid.setHgap(10);
+        grid.setVgap(10);
+        grid.setPadding(new Insets(60, 60, 60, 60));
+        
+        addCityToTripScene = new Scene(grid, 720, 650);
+        
+        Label title = new Label("Add City to Trip");
+        title.setFont(Font.font("Comic Sans MS",  50));
+        title.setTextFill(Color.MEDIUMTURQUOISE);
+        grid.add(title, 0, 0, 2, 1);
+        
+        LinkedList<Trip> userTrips = null;
+        
+        userTrips = facade.getUserTrips(actualUser);
+
+        ComboBox tripsBox = new ComboBox();
+        tripsBox.setPromptText("Trips");
+        
+        for(Trip trip : userTrips){
+            tripsBox.getItems().add(trip.getName());
+        }
+        
+        Text trips = new Text("Your Trips: ");
+        grid.add(trips, 0, 2);
+        
+        grid.add(tripsBox, 1, 2);
+        
+        LinkedList<City> cities = null;
+        
+        try{
+            cities = facade.getCities();
+        } catch (TheresNoCityException ex) {
+            //Will never enter here.
+        }
+        
+        ComboBox citiesBox = new ComboBox();
+        citiesBox.setPromptText("Cities");
+        
+        for(City city : cities){
+            citiesBox.getItems().add(city.getCode()+"-"+city.getName());
+        }
+        
+        Text citiesText = new Text("Cities: ");
+        grid.add(citiesText, 0 , 4);
+        grid.add(citiesBox, 1, 4);
+        
+        Text inDateText = new Text("Date in: ");
+        grid.add(inDateText, 0, 6);
+        
+        DatePicker inDate = new DatePicker();
+        grid.add(inDate, 1 ,6);
+        
+        Text outDateText = new Text("Date out: ");
+        grid.add(outDateText, 0, 8);
+        
+        DatePicker outDate = new DatePicker();
+        grid.add(outDate, 1, 8);
+        
+        Button add = new Button("Add");
+        add.setOnAction((ActionEvent event)->{
+            boolean isOk = true;
+            if(tripsBox.getSelectionModel().getSelectedItem() == null){
+                alert("Select a Trip in \"Trip Box\".");
+                isOk = false;
+            }
+            else if(citiesBox.getSelectionModel().getSelectedItem() == null){
+                alert("Select a City in \"City Box\".");
+                isOk = false;
+            }
+            else if(inDate.getValue() == null){
+                alert("Select a Date in \"Date Box\".");
+                isOk = false;
+            }
+            else if(outDate.getValue() == null){
+                alert("Select a Date in \"Date Box\".");
+                isOk = false;
+            }
+            if(isOk == true){
+                String tripName = (String)tripsBox.getSelectionModel().getSelectedItem();
+                String fullCity = (String)citiesBox.getSelectionModel().getSelectedItem();
+                String newCityNameA = "";
+                int cityCode = 0;
+                    for(int i = 0; fullCity.charAt(i) != '-'; i++){
+                        newCityNameA += fullCity.charAt(i);
+                    }
+                    try{
+                        cityCode = Integer.parseInt(newCityNameA);
+                    }
+                    catch(NumberFormatException nfx){
+                        //Shouldn't enter here.
+                    }
+                LocalDate inDateGetter = inDate.getValue();
+                int inDay = inDateGetter.getDayOfMonth();
+                int inMonth = inDateGetter.getMonthValue();
+                int inYear = inDateGetter.getYear();
+                
+                LocalDate outDateGetter = outDate.getValue();
+                int outDay = outDateGetter.getDayOfMonth();
+                int outMonth = outDateGetter.getMonthValue();
+                int outYear = outDateGetter.getYear();
+                
+                Calendar in = Calendar.getInstance();
+                in.set(inYear, inMonth, inDay);
+                
+                Calendar out = Calendar.getInstance();
+                out.set(outYear, outMonth, outDay);
+                
+                try{
+                    facade.insertCityInTrip(actualUser.getCpf(), tripName, in, out, cityCode);
+                    alertInfo("City added with Success.");
+                    primaryStage.setScene(userScene);
+                } catch (InexistentEntryException ex) {
+                    //Will never enter here.
+                } catch (NotFoundException ex) {
+                    //Will never enter here.
+                }
+                
+            }
+        });
+        
+        Button cancel = new Button("Cancel");
+        cancel.setTextFill(Color.RED);
+        cancel.setOnAction((ActionEvent event)->{
+            primaryStage.setScene(userScene);
+        });
+        
+        BorderPane btnBp = new BorderPane();
+        grid.add(btnBp, 0, 10, 2, 1);
+        
+        btnBp.setLeft(add);
+        btnBp.setRight(cancel);
+        
+    }
+    
+    private void drawRemoveCityFromTripScene(Stage primaryStage){
+        GridPane grid = new GridPane();
+        grid.setAlignment(Pos.TOP_CENTER);
+        grid.setHgap(10);
+        grid.setVgap(10);
+        grid.setPadding(new Insets(60, 60, 60, 60));
+        
+        removeCityFromTripScene = new Scene(grid, 720, 650);
+        
+        Label title = new Label("Add City to Trip");
+        title.setFont(Font.font("Comic Sans MS",  50));
+        title.setTextFill(Color.MEDIUMTURQUOISE);
+        grid.add(title, 0, 0, 2, 1);
+        
+        LinkedList<Trip> userTrips;
+        
+        userTrips = facade.getUserTrips(actualUser);
+        ComboBox tripsBox = new ComboBox();
+        tripsBox.setPromptText("Trips");
+        if(userTrips.size() > 0){
+            for(Trip trip : userTrips){
+                tripsBox.getItems().add(trip.getName());
+            }
+        }
+        Text trips = new Text("Your Trips: ");
+        grid.add(trips, 0, 2);
+        
+        grid.add(tripsBox, 1, 2);
+        
+        ComboBox cityBox = new ComboBox();
+        cityBox.setPromptText("Cities");
+        
+        Button select = new Button("Select");
+        grid.add(select, 2, 2);
+        
+        Text cities = new Text("Cities: ");
+        grid.add(cities, 0, 4);
+        cities.setVisible(false);
+        
+        grid.add(cityBox, 1, 4);
+        cityBox.setVisible(false);
+        
+        BorderPane btnBp = new BorderPane();
+        grid.add(btnBp, 0 , 6, 2, 1);
+        
+        Button remove = new Button("Remove");
+        remove.setOnAction((ActionEvent event)->{
+            if(tripsBox.getSelectionModel().getSelectedItem() == null){
+                alert("Select a Trip in \"Trip Box\" Field.");
+            }
+            else if(cityBox.getSelectionModel().getSelectedItem() == null){
+                alert("Select a City in \"City Box\" Field.");
+            }
+            else{
+            String name = (String) tripsBox.getSelectionModel().getSelectedItem();
+            String cityName = (String)cityBox.getSelectionModel().getSelectedItem();
+            
+            String newCityNameA = "";
+            int cityCode = 0;
+                for(int i = 0; cityName.charAt(i) != '-'; i++){
+                    newCityNameA += cityName.charAt(i);
+                }
+                try{
+                    cityCode = Integer.parseInt(newCityNameA);
+                }
+                catch(NumberFormatException nfx){
+                    //Shouldn't enter here.
+                }
+            
+            Trip test = new Trip(name);
+            int position = userTrips.indexOf(test);
+            Trip trip = userTrips.get(position);
+            
+            try{
+                facade.removeCityFromTrip(trip, cityCode);
+                alertInfo("City removed with Success.");
+                primaryStage.setScene(userScene);
+            }   catch (InexistentEntryException ex) {
+                    //Will never enter here.
+            }
+
+            }
+        });
+        
+        Button cancel = new Button("Cancel");
+        cancel.setOnAction((ActionEvent event)->{
+            primaryStage.setScene(userScene);
+        });
+        cancel.setTextFill(Color.RED);
+        
+        btnBp.setLeft(remove);
+        btnBp.setRight(cancel);
+        
+        btnBp.setVisible(false);
+        
+        select.setOnAction((ActionEvent event)->{
+            String name = (String) tripsBox.getSelectionModel().getSelectedItem();
+            
+            Trip test = new Trip(name);
+            int position = userTrips.indexOf(test);
+            Trip trip = userTrips.get(position);
+            
+            ArrayList<PitStop> spots = trip.getSpots();
+            
+            for(PitStop ps : spots){
+                cityBox.getItems().add(ps.getCity().getCode()+"-"+ps.getCity().getName());
+            }
+            
+            btnBp.setVisible(true);
+            cityBox.setVisible(true);
+            cities.setVisible(true);
+        });
+    }
+    
+    private void drawTripScene(Stage primaryStage){
+        
+        GridPane grid = new GridPane();
+        grid.setAlignment(Pos.TOP_CENTER);
+        grid.setHgap(10);
+        grid.setVgap(10);
+        grid.setPadding(new Insets(60, 60, 60, 60));
+        
+        tripsScene = new Scene(grid, 720, 650);
+        
+        Label title = new Label("Trips");
+        title.setFont(Font.font("Comic Sans MS",  50));
+        title.setPadding(new Insets(0, 0, 0, 230));
+        title.setTextFill(Color.MEDIUMTURQUOISE);
+        grid.add(title, 0, 0, 2, 1);
+        
+        LinkedList<Trip> userTrips;
+        
+        userTrips = facade.getUserTrips(actualUser);
+        ComboBox tripsBox = new ComboBox();
+        tripsBox.setTranslateX(200);
+        tripsBox.setPromptText("Trips");
+        if(userTrips.size() > 0){
+            for(Trip trip : userTrips){
+                tripsBox.getItems().add(trip.getName());
+            }
+        }
+        Text trips = new Text("Your Trips: ");
+        trips.setTranslateX(200);
+        grid.add(trips, 0, 2);
+        
+        grid.add(tripsBox, 1, 2);
+        
+        Button select = new Button("Select");
+        grid.add(select, 2, 2);
+        
+        BorderPane bp = new BorderPane();
+        grid.add(bp, 0, 4, 2, 1);
+        
+        ScrollPane sp = new ScrollPane();
+        sp.setMinWidth(600);
+        
+        ListView viewTrips = new ListView();
+        viewTrips.setMinWidth(600);
+        viewTrips.setOrientation(Orientation.VERTICAL);
+        
+        bp.setCenter(sp);
+        sp.setContent(viewTrips);
+        sp.setVisible(false);
+        viewTrips.setVisible(false);
+        
+        select.setOnAction((ActionEvent event)->{
+            if(tripsBox.getSelectionModel().getSelectedItem() == null){
+                alert("Select a Trip in \"Trip Box\" Field.");
+            }
+            else{
+                viewTrips.getItems().clear();
+                String name = (String) tripsBox.getSelectionModel().getSelectedItem();
+            
+                Trip test = new Trip(name);
+                int position = userTrips.indexOf(test);
+                Trip trip = userTrips.get(position);
+                
+                ArrayList<PitStop> ps = trip.getSpots();
+                SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy");
+                for(PitStop psA : ps){
+                    String cell = "-> City: "+psA.getCity() + " " +"-> Arrive: "+ df.format(psA.getTimeIn().getTime()) + " " +"-> Departure: "+df.format(psA.getTimeOut().getTime());
+                    viewTrips.getItems().add(cell);
+                }
+                viewTrips.setVisible(true);
+                sp.setVisible(true);
+            }
+        });
+        
+        Button back = new Button("Back");
+        back.setTextFill(Color.RED);
+        back.setOnAction((ActionEvent event)->{
+            primaryStage.setScene(userScene);
+        });
+        back.setTranslateX(275);
+        bp.setBottom(back);
     }
     
     private void alert(String message){

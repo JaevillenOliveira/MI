@@ -11,6 +11,8 @@ import junit.framework.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import Model.*;
+import Exceptions.TheresNoEntryException;
+import java.io.FileNotFoundException;
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Calendar;
@@ -25,9 +27,12 @@ public class AcceptationTest {
     private final Controller controller;
     private City capela, novaFatima, riachao, itatiaia, gaviao, saoJose, capimGrosso;
     private Intersection inter;
-    
+    private Calendar date = Calendar.getInstance();
+        
     public AcceptationTest() throws NoSuchAlgorithmException, DuplicatedDataException, UnsupportedEncodingException {
         controller = new Controller();
+        date.set(10, 10, 10);
+    
     }
     
     @Before
@@ -175,16 +180,18 @@ public class AcceptationTest {
     public void testStartATrip() throws DuplicatedDataException, NoSuchAlgorithmException, UnsupportedEncodingException, DuplicateEntryException, NotFoundException{
         controller.newUser("Almir Neto", "123456", "123456789", "teste@gmail.com");
         
-        controller.startTrip("123456789", "Rolê pra Cabuçu");
+        
+        
+        controller.startTrip("123456789", "Rolê pra Cabuçu", date);
     }
     
     @Test (expected = DuplicateEntryException.class)
     public void testStartATripWithTheSameName() throws DuplicateEntryException, DuplicatedDataException, NoSuchAlgorithmException, UnsupportedEncodingException, NotFoundException{
         controller.newUser("Almir Neto", "123456", "123456789", "teste@gmail.com");
         
-        controller.startTrip("123456789", "Rolê pra Cabuçu");
+        controller.startTrip("123456789", "Rolê pra Cabuçu", date);
         
-        controller.startTrip("123456789", "Rolê pra Cabuçu");
+        controller.startTrip("123456789", "Rolê pra Cabuçu",date);
         
     }
     
@@ -192,7 +199,7 @@ public class AcceptationTest {
     public void testInsertSpotsInexistentsInTheTrip() throws DuplicateEntryException, DuplicatedDataException, NoSuchAlgorithmException, UnsupportedEncodingException, NotFoundException, InexistentEntryException{
         controller.newUser("Almir Neto", "123456", "123456789", "teste@gmail.com");
         
-        controller.startTrip("123456789", "Rolê pra Cabuçu");
+        controller.startTrip("123456789", "Rolê pra Cabuçu", date);
         Calendar data = Calendar.getInstance();
         
         controller.insertCityInTrip("123456789", "Rolê pra Cabuçu",data , data, 300);
@@ -202,7 +209,7 @@ public class AcceptationTest {
     public void testInsertSpotsInTheTripWithSucess() throws DuplicateEntryException, DuplicatedDataException, NoSuchAlgorithmException, UnsupportedEncodingException, NotFoundException, InexistentEntryException{
         controller.newUser("Almir Neto", "123456", "123456789", "teste@gmail.com");
         
-        controller.startTrip("123456789", "Rolê pra Cabuçu");
+        controller.startTrip("123456789", "Rolê pra Cabuçu", date);
         Calendar data = Calendar.getInstance();
         
         capela = controller.addCity("Capela", 22.2, 12.1, 300, 1);
@@ -214,7 +221,7 @@ public class AcceptationTest {
     
   
     @Test
-    public void shortestPath() throws DuplicateEntryException, DuplicatedDataException, NoSuchAlgorithmException, UnsupportedEncodingException, NotFoundException, AlreadyHasAdjacency, InexistentVertexException, LoopIsNotAllowedException, InexistentEntryException, InsufficientSpotsException{
+    public void shortestPath() throws DuplicateEntryException, DuplicatedDataException, NoSuchAlgorithmException, UnsupportedEncodingException, NotFoundException, AlreadyHasAdjacency, InexistentVertexException, LoopIsNotAllowedException, InexistentEntryException, InsufficientSpotsException, TheresNoEntryException{
         
         capela = controller.addCity("Capela", 22.2, 12.1, 300, 1);
         novaFatima = controller.addCity("Nova Fátima", 22.2, 12.1, 301, 1);
@@ -238,7 +245,7 @@ public class AcceptationTest {
         
         controller.newUser("Almir Neto", "123456", "123456789", "teste@gmail.com");
         
-        controller.startTrip("123456789", "Rolê pra Cabuçu");
+        controller.startTrip("123456789", "Rolê pra Cabuçu", date);
         
         Calendar data = Calendar.getInstance();
         
@@ -281,4 +288,49 @@ public class AcceptationTest {
         Assert.assertEquals("ITATIAIA", ((City)((Vertex) obj.getCur()).getVertex()).getName());
         Assert.assertEquals(400.4,obj.getDistance());
     }
+    
+    @Test
+    public void testReadEdges() throws DuplicateEntryException, FileNotFoundException, InexistentEntryException, AlreadyHasAdjacency, InexistentVertexException, LoopIsNotAllowedException{
+        capela = controller.addCity("Capela", 22.2, 12.1, 2906857, 1);
+        novaFatima = controller.addCity("Nova Fátima", 22.2, 12.1, 2922730, 1);
+        gaviao =  controller.addCity("Gavião", 22.2, 12.1, 2911253, 1);
+        saoJose = controller.addCity("São José", 22.2, 12.1, 2929370, 1);
+        riachao = controller.addCity("Riachão", 22.2, 12.1, 2926301, 1);
+        capimGrosso = controller.addCity("Capim Grosso", 22.2, 12.1, 2906873, 1);
+        itatiaia = controller.addCity("Itatiaia", 22.2, 12.1, 2927408, 1);
+        controller.addCity("Pe de serra", 0, 0, 2924058, 0);
+        controller.addCity("Pe de serra", 0, 0, 2933000, 0);
+        controller.addCity("Pe de serra", 0, 0, 2930501, 0);
+        controller.addCity("Pe de serra", 0, 0, 2910800	, 0);
+        controller.addCity("Pe de serra", 0, 0, 2900702, 0);
+        controller.addCity("Pe de serra", 0, 0, 2905701, 0);
+        controller.addCity("Pe de serra", 0, 0, 2918001, 0);
+        controller.addCity("Pe de serra", 0, 0, 2917508, 0);
+        
+        controller.readEdges("C:\\Users\\Jaevillen\\Desktop\\Ecomp\\PBL\\Problema 4\\Estradas.txt");
+    }
+    
+    @Test
+    public void testReadCities() throws FileNotFoundException, DuplicateEntryException, InexistentEntryException{
+        controller.readCities("C:\\Users\\Jaevillen\\Desktop\\Ecomp\\PBL\\Problema 4\\Cidades.txt");
+        
+        Assert.assertEquals("CAPELA DO ALTO ALEGRE", controller.searchCity(2906857).getName());
+        Assert.assertEquals("NOVENTA", controller.searchCity(2922730).getName());
+        Assert.assertEquals("RIACHÃO DO JACUÍPE", controller.searchCity(2926301).getName());
+        Assert.assertEquals("CAPIM GROSSO", controller.searchCity(2906873).getName());
+        Assert.assertEquals("SÃO JOSÉ DO JACUÍPE", controller.searchCity(2929370).getName());
+        Assert.assertEquals("GAVIÃO", controller.searchCity(2911253).getName());
+        Assert.assertEquals("PÉ DE SERRA", controller.searchCity(2924058).getName());
+        Assert.assertEquals("VALENTE", controller.searchCity(2933000).getName());
+        Assert.assertEquals("SERRINHA", controller.searchCity(2930501).getName());
+        Assert.assertEquals("FEIRA DE SANTANA", controller.searchCity(2910800).getName());
+        Assert.assertEquals("ALAGOINHAS", controller.searchCity(2900702).getName());
+        Assert.assertEquals("CAMAÇARI", controller.searchCity(2905701).getName());
+        Assert.assertEquals("SALVADOR", controller.searchCity(2927408).getName());
+        Assert.assertEquals("JEQUIÉ", controller.searchCity(2918001).getName());
+        Assert.assertEquals("JACOBINA", controller.searchCity(2917508).getName());
+                
+        
+    }
+
 }

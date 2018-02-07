@@ -1,9 +1,14 @@
 
 package Controller;
 
+import Exceptions.TheresNoEntryException;
+import Exceptions.TheresNoCityException;
+import Exceptions.DontHaveTripsException;
 import Exceptions.*;
 import Model.*;
 import Util.*;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -13,7 +18,10 @@ import java.util.Calendar;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Scanner;
 import java.util.Stack;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -247,15 +255,17 @@ public class Controller {
      * Method that creates a Trip.
      * @param cpf The CPF of the user.
      * @param tripName The name identifies the trip.
+     * @param date The Date of the Start of the Trip 
      * @return The trip.
      * @throws DuplicateEntryException If there's already a trip with the name informed.
      * @throws NotFoundException If the user doesn't exist.
      */
-    public Trip startTrip(String cpf, String tripName) throws DuplicateEntryException, NotFoundException{
+    public Trip startTrip(String cpf, String tripName, Calendar date) throws DuplicateEntryException, NotFoundException{
         
         User user = getUser(cpf);
         
-        Trip trip = new Trip(tripName);
+        Trip trip = new Trip(tripName.toUpperCase());
+        trip.setInitialDate(date);
         
         if(user.getTrip() == null){
             user.setTrip(new Queue());
@@ -358,7 +368,7 @@ public class Controller {
      * @throws DuplicateEntryException 
      * @throws InsufficientSpotsException If the Trip don't has a least two points.
      */
-    public Iterator shortestPath (String cpf, String tripName) throws NotFoundException, InexistentEntryException, DuplicateEntryException, InsufficientSpotsException{
+    public Iterator shortestPath (String cpf, String tripName) throws NotFoundException, InexistentEntryException, DuplicateEntryException, InsufficientSpotsException, TheresNoEntryException{
 
         Trip trip = this.searchTrip(cpf, tripName);
         ArrayList spots = trip.getSpots();
@@ -384,6 +394,7 @@ public class Controller {
         }
         return finalPath.iterator();
     } 
+    
     private void addAdmin() throws NoSuchAlgorithmException, UnsupportedEncodingException, DuplicatedDataException{
         
         String pw = hashPassword("pbl4");
@@ -391,15 +402,138 @@ public class Controller {
         
         users.inserir(admin);
     }
-    
-    public List getCities(){
-        List<Vertex> city = cities.getAllVertex();
+    /**
+     * Method that returns all Cities of the System.
+     * @return All Cities of The System.
+     * @throws TheresNoCityException When there's no City in the System. 
+     */
+    public LinkedList getCities() throws TheresNoCityException{
         
-        List casted = new LinkedList();
+        LinkedList<Vertex> city;
+        try{
+            city = cities.getAllVertex();
+        } catch (ThereNoKeysException ex) {
+            throw new TheresNoCityException();
+        }
+        
+        LinkedList casted = new LinkedList();
         
         for(Vertex vertex : city){
             casted.add(vertex.getVertex());
         }
         return casted;
     }
+    /**
+     * Method that verifies if there are Cities in System.
+     * @return TRUE If there are City in System.
+     */
+    public boolean haveCities(){
+        try{
+            cities.getAllVertex();
+            return true;
+        } catch (ThereNoKeysException ex) {
+            return false;
+        }
+    }
+    /**
+     * Method that returns the Trips from an User.
+     * @param user The User that will be verified if there aew Trips.
+     * @return A LinkedList with all User's Trips.
+     */
+    public LinkedList getUserTrips(User user){
+        
+        LinkedList trips;
+        if(haveTrips(user)){
+            trips = user.getTrip().toList();
+            return trips;
+        }
+        return null;
+    }
+    /**
+     * Method that verifies if an User has Trips registered.
+     * @param user The User that will be verified if there are Trips.
+     * @return TRUE if there's the User has Trips.
+     */
+    public boolean haveTrips(User user){
+        if(user.getTrip() == null){
+            return false;
+        }
+        else{
+            return true;
+        }
+    }
+    /**
+     * Method that remove a City from a Trip
+     * @param trip The Trip that the city will be removed.
+     * @param code The Code of the City that will be removed.
+     * @throws InexistentEntryException If the City with the Code doesn't exist.
+     */
+    public void removeCityFromTrip(Trip trip, int code) throws InexistentEntryException{
+        
+        ArrayList<PitStop> spots = trip.getSpots();
+        City city = searchCity(code);
+        
+        PitStop remove = new PitStop(city);
+        
+        spots.remove(remove);
+    }
+    
+    public void readEdges(String directory) throws FileNotFoundException, InexistentEntryException, AlreadyHasAdjacency, InexistentVertexException, LoopIsNotAllowedException, DuplicateEntryException{
+        File arq = new File(directory);
+        Scanner scan = new Scanner(arq);
+        
+        while(scan.hasNext()){
+            int codeA = scan.nextInt();
+            int codeB = scan.nextInt();
+            double km = Double.parseDouble(scan.next());
+           
+            City cityA = null, cityB = null;
+            Intersection interA = null, interB = null;
+            try{
+                cityA = this.searchCity(codeA);
+            }catch(InexistentEntryException ex){
+                interA = this.searchIntersection(codeA);
+            }
+            
+           try{
+                cityB = this.searchCity(codeB);
+            }catch(InexistentEntryException ex){
+                interB = this.searchIntersection(codeB);
+            }
+           
+            if (cityA != null && cityB != null){
+                this.addRoad(cityA, cityB, km);
+            }
+            else if(interA != null && interB != null){
+                this.addRoad(interA, interB, km);
+            }
+            else if(cityA != null && interB != null) {
+                this.addRoad(interB, cityA, km);
+            }
+            else{
+                this.addRoad(interA, cityB, km);
+            }
+        }
+        scan.close();
+        
+    }
+    
+    public void readCities(String directory) throws FileNotFoundException, DuplicateEntryException{
+        File arq = new File(directory);
+        Scanner scan = new Scanner(arq);
+        
+        scan.useDelimiter("\u0009");
+
+        while(scan.hasNext()){
+            String nome = scan.next();
+            int code = scan.nextInt();
+            double latitude = Double.parseDouble(scan.next());
+            double longitude = Double.parseDouble(scan.next());
+
+            this.addCity(nome.substring(nome.indexOf("\n") + 1), latitude, longitude, code, 0);
+        }
+        
+        
+    }
+        
 }

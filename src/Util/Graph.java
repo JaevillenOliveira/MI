@@ -1,11 +1,14 @@
 
 package Util;
 
+import Exceptions.TheresNoEntryException;
 import Model.*;
 import Exceptions.*;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Stack;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -47,7 +50,13 @@ public class Graph implements IGraph{
      */
     @Override
     public Iterator vertex() {
-        return vertex.iterator();         
+        Iterator it;
+        try{
+            it = vertex.iterator();
+        } catch (ThereNoKeysException ex) {
+            return null;
+        }
+        return it;
     }
 
     /**
@@ -215,7 +224,14 @@ public class Graph implements IGraph{
      */
     @Override
     public Iterator edges() {
-        return edges.iterator();
+        Iterator it;
+        
+        try{
+            it = edges.iterator();
+        } catch (ThereNoKeysException ex) {
+            return null;
+        }
+        return it;
     }
 
       /**
@@ -251,7 +267,7 @@ public class Graph implements IGraph{
      * @throws InexistentEntryException If there's no Vertex with the Key informed.
      * @throws DuplicateEntryException
      */
-    public HashMap shortestPath(Object keyStart) throws InexistentEntryException, DuplicateEntryException{
+    public HashMap shortestPath(Object keyStart) throws InexistentEntryException, DuplicateEntryException, TheresNoEntryException{
         
         HashMap shortestPath = new HashMap();
         FilaPrioridade queue = new FilaPrioridade(10);
@@ -342,11 +358,11 @@ public class Graph implements IGraph{
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
-    public LinkedList getAllVertex(){
+    public LinkedList getAllVertex() throws ThereNoKeysException{
         return vertex.toList();
     }
     
-    public LinkedList getAllEdges(){
+    public LinkedList getAllEdges() throws ThereNoKeysException{
         return edges.toList();
     }
     

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<testsuite errors="0" failures="0" hostname="DESKTOP-1BCB0D3" name="AcceptationTest.AcceptationTest" skipped="0" tests="19" time="0.161" timestamp="2018-02-06T02:45:36">
+<testsuite errors="0" failures="0" hostname="DESKTOP-1BCB0D3" name="AcceptationTest.AcceptationTest" skipped="0" tests="21" time="0.181" timestamp="2018-02-07T03:27:40">
   <properties>
     <property name="netbeans.autoupdate.country" value="BR" />
     <property name="javac.test.classpath" value=":build/classes:C:\Program Files\NetBeans 8.2\platform\modules\ext\junit-4.12.jar:C:\Program Files\NetBeans 8.2\platform\modules\ext\hamcrest-core-1.3.jar" />
@@ -40,7 +40,7 @@
     <property name="user.name" value="Jaevillen" />
     <property name="copylibs.rebase" value="true" />
     <property name="libs.swing-layout.maven-pom" value="" />
-    <property name="sun.java.command" value="org.apache.tools.ant.taskdefs.optional.junit.JUnitTestRunner AcceptationTest.AcceptationTest skipNonTests=false filtertrace=true haltOnError=false haltOnFailure=false showoutput=true outputtoformatters=true logfailedtests=true threadid=0 logtestlistenerevents=true formatter=org.apache.tools.ant.taskdefs.optional.junit.BriefJUnitResultFormatter formatter=org.apache.tools.ant.taskdefs.optional.junit.XMLJUnitResultFormatter,C:\Users\Jaevillen\Downloads\MI-Programming-master\build\test\results\TEST-AcceptationTest.AcceptationTest.xml crashfile=C:\Users\Jaevillen\Downloads\MI-Programming-master\build\junitvmwatcher1646800335451144896.properties propsfile=C:\Users\Jaevillen\Downloads\MI-Programming-master\build\junit8355631223079775808.properties" />
+    <property name="sun.java.command" value="org.apache.tools.ant.taskdefs.optional.junit.JUnitTestRunner AcceptationTest.AcceptationTest skipNonTests=false filtertrace=true haltOnError=false haltOnFailure=false showoutput=true outputtoformatters=true logfailedtests=true threadid=0 logtestlistenerevents=true formatter=org.apache.tools.ant.taskdefs.optional.junit.BriefJUnitResultFormatter formatter=org.apache.tools.ant.taskdefs.optional.junit.XMLJUnitResultFormatter,C:\Users\Jaevillen\Downloads\MI-Programming-master\build\test\results\TEST-AcceptationTest.AcceptationTest.xml crashfile=C:\Users\Jaevillen\Downloads\MI-Programming-master\build\junitvmwatcher2425126264975805002.properties propsfile=C:\Users\Jaevillen\Downloads\MI-Programming-master\build\junit8360421232683618733.properties" />
     <property name="build.classes.dir" value="build/classes" />
     <property name="netbeans.accept_license_class" value="org.netbeans.license.AcceptLicense" />
     <property name="build.sysclasspath" value="ignore" />
@@ -71,7 +71,7 @@
     <property name="javac.debug" value="true" />
     <property name="javadoc.splitindex" value="true" />
     <property name="file.separator" value="\" />
-    <property name="javac.includesfile.binary" value="C:\Users\Jaevillen\Downloads\MI-Programming-master\null2069253842" />
+    <property name="javac.includesfile.binary" value="C:\Users\Jaevillen\Downloads\MI-Programming-master\null407932618" />
     <property name="libs.junit_4.maven-pom" value="" />
     <property name="mkdist.disabled" value="false" />
     <property name="javac.test.processorpath" value=":build/classes:C:\Program Files\NetBeans 8.2\platform\modules\ext\junit-4.12.jar:C:\Program Files\NetBeans 8.2\platform\modules\ext\hamcrest-core-1.3.jar" />
@@ -83,6 +83,7 @@
     <property name="sun.java.launcher" value="SUN_STANDARD" />
     <property name="libs.hibernate4-persistencemodelgen.javadoc" value="" />
     <property name="libs.jaxb.javadoc" value="C:\Program Files\NetBeans 8.2\ide\docs\jaxb-api-doc.zip" />
+    <property name="org.openide.awt.SwingBrowserImpl.do-not-block-awt" value="false" />
     <property name="javac.includes.binary" value="C:\Users\Jaevillen\Downloads\MI-Programming-master\build\test\classes\AcceptationTest\AcceptationTest.class" />
     <property name="ant.home" value="C:\Program Files\NetBeans 8.2\extide\ant" />
     <property name="libs.junit_4.src" value="C:\Program Files\NetBeans 8.2\platform\docs\junit-4.12-sources.jar" />
@@ -190,7 +191,7 @@
     <property name="libs.spring-framework400.maven-pom" value="" />
     <property name="java.runtime.name" value="Java(TM) SE Runtime Environment" />
     <property name="ant.project.name" value="RoadTrips" />
-    <property name="netbeans.hash.code" value="unique=NBJDK_EXTIDE_JAVA_JDK097ddd5ff-706e-4ae5-981e-b690aea56310_1f144552-4d98-4ccd-ae9b-30ee749b80a5" />
+    <property name="netbeans.hash.code" value="unique=NBJDK_EXTIDE_JAVA_JDK02069810c-63dd-465d-85a3-bc0ebc891aa1_1f144552-4d98-4ccd-ae9b-30ee749b80a5" />
     <property name="netbeans.default_userdir_root" value="C:\Users\Jaevillen\AppData\Roaming\NetBeans" />
     <property name="sun.cpu.isalist" value="amd64" />
     <property name="libs.spring-framework400.javadoc" value="" />
@@ -308,32 +309,152 @@
     <property name="libs.CopyLibs.src" value="" />
     <property name="build.dir" value="build" />
     <property name="ant.version" value="Apache Ant(TM) version 1.9.7 compiled on April 9 2016" />
-    <property name="file.encoding" value="Cp1252" />
     <property name="build.classes.excludes" value="**/*.java,**/*.form" />
+    <property name="file.encoding" value="Cp1252" />
     <property name="jdkBug6558476" value="false" />
     <property name="javadoc.nonavbar" value="false" />
     <property name="platform.active" value="default_platform" />
     <property name="awt.toolkit" value="sun.awt.windows.WToolkit" />
   </properties>
-  <testcase classname="AcceptationTest.AcceptationTest" name="testAddRoadBetweenTwoCitiesThatHaveAlreadyAdjacency" time="0.005" />
-  <testcase classname="AcceptationTest.AcceptationTest" name="shortestPath" time="0.01" />
-  <testcase classname="AcceptationTest.AcceptationTest" name="testAddCity" time="0.001" />
+  <testcase classname="AcceptationTest.AcceptationTest" name="testReadCities" time="0.014" />
+  <testcase classname="AcceptationTest.AcceptationTest" name="testAddRoadBetweenTwoCitiesThatHaveAlreadyAdjacency" time="0.001" />
+  <testcase classname="AcceptationTest.AcceptationTest" name="shortestPath" time="0.012" />
+  <testcase classname="AcceptationTest.AcceptationTest" name="testAddCity" time="0.0" />
   <testcase classname="AcceptationTest.AcceptationTest" name="testInsertSpotsInexistentsInTheTrip" time="0.001" />
   <testcase classname="AcceptationTest.AcceptationTest" name="testRegisterOfTwoDifferentUsers" time="0.001" />
-  <testcase classname="AcceptationTest.AcceptationTest" name="testLogin" time="0.0" />
+  <testcase classname="AcceptationTest.AcceptationTest" name="testLogin" time="0.001" />
+  <testcase classname="AcceptationTest.AcceptationTest" name="testReadEdges" time="0.007" />
   <testcase classname="AcceptationTest.AcceptationTest" name="testIfTheEatPointIsRegistered" time="0.003" />
-  <testcase classname="AcceptationTest.AcceptationTest" name="testInsertSpotsInTheTripWithSucess" time="0.001" />
+  <testcase classname="AcceptationTest.AcceptationTest" name="testInsertSpotsInTheTripWithSucess" time="0.0" />
   <testcase classname="AcceptationTest.AcceptationTest" name="testAddDuplicatedCity" time="0.001" />
-  <testcase classname="AcceptationTest.AcceptationTest" name="testRegisterAnEatPointIntoACityThatDoesntExist" time="0.001" />
+  <testcase classname="AcceptationTest.AcceptationTest" name="testRegisterAnEatPointIntoACityThatDoesntExist" time="0.0" />
   <testcase classname="AcceptationTest.AcceptationTest" name="testAddRoadBetweenTheSameCity" time="0.0" />
-  <testcase classname="AcceptationTest.AcceptationTest" name="testAddRoadBetweenTwoCitiesOrIntersections" time="0.002" />
+  <testcase classname="AcceptationTest.AcceptationTest" name="testAddRoadBetweenTwoCitiesOrIntersections" time="0.001" />
   <testcase classname="AcceptationTest.AcceptationTest" name="testStartATripWithTheSameName" time="0.0" />
-  <testcase classname="AcceptationTest.AcceptationTest" name="testDuplicatedUsers" time="0.0" />
-  <testcase classname="AcceptationTest.AcceptationTest" name="testAddRoadBetweenACityThatDoesntExist" time="0.0" />
-  <testcase classname="AcceptationTest.AcceptationTest" name="testNewUser" time="0.001" />
-  <testcase classname="AcceptationTest.AcceptationTest" name="testAddEatPoint" time="0.0" />
+  <testcase classname="AcceptationTest.AcceptationTest" name="testDuplicatedUsers" time="0.002" />
+  <testcase classname="AcceptationTest.AcceptationTest" name="testAddRoadBetweenACityThatDoesntExist" time="0.001" />
+  <testcase classname="AcceptationTest.AcceptationTest" name="testNewUser" time="0.0" />
+  <testcase classname="AcceptationTest.AcceptationTest" name="testAddEatPoint" time="0.001" />
   <testcase classname="AcceptationTest.AcceptationTest" name="testStartATrip" time="0.0" />
   <testcase classname="AcceptationTest.AcceptationTest" name="testAddIntersection" time="0.0" />
-  <system-out><![CDATA[]]></system-out>
+  <system-out><![CDATA[CAPELA DO ALTO ALEGRE
+2906857
+-11.665509
+-39.859167
+CAPELA DO ALTO ALEGRE
+-1
+
+NOVENTA
+2922730
+-11.6018
+-39.627
+
+NOVENTA
+1
+
+RIACHÃO DO JACUÍPE
+2926301
+-11.809837
+-39.38085
+
+RIACHÃO DO JACUÍPE
+1
+
+CAPIM GROSSO
+2906873
+-11.384479
+-40.008328
+
+CAPIM GROSSO
+1
+
+SÃO JOSÉ DO JACUÍPE
+2929370
+-11.506047
+-40.025394
+
+SÃO JOSÉ DO JACUÍPE
+1
+
+GAVIÃO
+2911253
+-11.467501
+-39.776167
+
+GAVIÃO
+1
+
+PÉ DE SERRA
+2924058
+-11.83934
+-39.610279
+
+PÉ DE SERRA
+1
+
+VALENTE
+2933000
+-11.413522
+-39.465372
+
+VALENTE
+1
+
+SERRINHA
+2930501
+-11.671347
+-39.015423
+
+SERRINHA
+1
+
+FEIRA DE SANTANA
+2910800
+-12.267535
+-38.964538
+
+FEIRA DE SANTANA
+1
+
+ALAGOINHAS
+2900702
+-12.142749
+-38.412509
+
+ALAGOINHAS
+1
+
+CAMAÇARI
+2905701
+-12.709252
+-38.325977
+
+CAMAÇARI
+1
+
+SALVADOR
+2927408
+-12.988679
+-38.460185
+
+SALVADOR
+1
+
+JEQUIÉ
+2918001
+-13.863848
+-40.083293
+
+JEQUIÉ
+1
+
+JACOBINA
+2917508
+-11.200475
+-40.502393
+
+JACOBINA
+1
+]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>

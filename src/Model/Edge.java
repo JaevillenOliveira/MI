@@ -60,6 +60,7 @@ public class Edge {
     @Override
     public boolean equals(Object obj){
         Edge ed = (Edge)obj;
+        
         return (ed.getA().equals(A) || ed.getA().equals(B)) && (ed.getB().equals(A) || ed.getB().equals(B));
     }
     

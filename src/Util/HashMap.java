@@ -5,6 +5,7 @@
  */
 package Util;
 
+import Exceptions.TheresNoEntryException;
 import Model.Entry;
 import Exceptions.DuplicateEntryException;
 import Exceptions.EmptyHashException;
@@ -180,12 +181,14 @@ public class HashMap{
         return size;
     }
     
-    //Only for tests.
-    public Iterator iterator() {
+    public Iterator iterator() throws TheresNoEntryException {
         return toList().iterator();
     }
     
-    public LinkedList toList(){
+    public LinkedList toList() throws TheresNoEntryException{
+        if(size == 0){
+            throw new TheresNoEntryException();
+        }
         LinkedList list = new LinkedList();
         for(int i = 0; i < map.length; i++){
             if(map[i] != null && !map[i].equals(EMPTY)){
