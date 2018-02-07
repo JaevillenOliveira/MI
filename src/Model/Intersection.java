@@ -26,6 +26,10 @@ public class Intersection extends Spot{
         this.type = type;
     }
     
+    public Intersection(double latitude, double longitude, int code){
+        super(latitude, longitude, code);
+    }
+    
     public Intersection(int code){
         super (code);
     }

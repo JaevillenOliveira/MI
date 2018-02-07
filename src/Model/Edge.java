@@ -59,9 +59,16 @@ public class Edge {
      */
     @Override
     public boolean equals(Object obj){
-        Edge ed = (Edge)obj;
-        
-        return (ed.getA().equals(A) || ed.getA().equals(B)) && (ed.getB().equals(A) || ed.getB().equals(B));
+        if(obj instanceof Edge){
+            Edge edge = (Edge)obj;
+            if((edge.getA() == null && edge.getB() == null) && (this.getA() == null && this.getB() == null)){
+                return true;
+            }
+            else{
+                return (this.getA().equals(edge.getA()) && this.getB().equals(edge.getB()) || this.getB().equals(edge.getA()) && this.getA().equals(edge.getB()));
+            }
+        }
+        return false;
     }
     
      /**
