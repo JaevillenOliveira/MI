@@ -4,17 +4,16 @@ package Util;
 import Exceptions.TheresNoEntryException;
 import Model.*;
 import Exceptions.*;
+import java.io.Serializable;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Stack;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
  * @author Almir and Jaevillen 
  */
-public class Graph implements IGraph{
+public class Graph implements IGraph, Serializable{
     
     private int numVertex;
     private int numEdges;
@@ -371,5 +370,4 @@ public class Graph implements IGraph{
     public LinkedList getAllEdges() throws ThereNoKeysException{
         return edges.toList();
     }
-    
 }
