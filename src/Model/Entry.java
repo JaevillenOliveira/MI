@@ -42,7 +42,13 @@ public class Entry {
     @Override
     public boolean equals(Object obj){    
         Entry comp = (Entry)obj;
-        return key.equals(comp.getKey());
+        if(key != null && comp.getKey() != null){
+            return key.equals(comp.getKey());
+        }
+        if(key == null && comp.getKey() == null){
+            return true;
+        }
+        return false;
     }
     
      /**
