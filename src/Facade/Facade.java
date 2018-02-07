@@ -6,20 +6,14 @@
 package Facade;
 
 import Controller.Controller;
-import Exceptions.AlreadyHasAdjacency;
-import Exceptions.DuplicateEntryException;
-import Exceptions.DuplicatedDataException;
-import Exceptions.InexistentEntryException;
-import Exceptions.InexistentVertexException;
-import Exceptions.InsufficientSpotsException;
-import Exceptions.LoopIsNotAllowedException;
-import Exceptions.NotFoundException;
+import Exceptions.*;
 import Model.*;
+import Exceptions.TheresNoEntryException;
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Calendar;
 import java.util.Iterator;
-import java.util.List;
+import java.util.LinkedList;
 
 /**
  *
@@ -45,7 +39,7 @@ public class Facade {
         return controller.addCity(cityName, latitude, longitude, code, population);
     }
     
-    public void addEatPoit(int code, String name, String adress, int rate) throws InexistentEntryException{
+    public void addEatPoint(int code, String name, String adress, int rate) throws InexistentEntryException{
         controller.addEatPoint(code, name, adress, rate);
     }
     
@@ -64,20 +58,36 @@ public class Facade {
         controller.addRoad(interA, interB, 0);
     }
     
-    public Trip startTrip(String cpf, String tripName) throws NotFoundException, DuplicateEntryException{
-        return controller.startTrip(cpf, tripName);
+    public Trip startTrip(String cpf, String tripName, Calendar date) throws NotFoundException, DuplicateEntryException{
+        return controller.startTrip(cpf, tripName, date);
     }
     
     public City insertCityInTrip(String cpf, String tripName, Calendar in, Calendar out, int code) throws InexistentEntryException, NotFoundException{
         return controller.insertCityInTrip(cpf, tripName, in, out, code);
     }
     
-    public Iterator shortestPath(String cpf, String tripName) throws NotFoundException, InexistentEntryException, DuplicateEntryException, InsufficientSpotsException{
+    public Iterator shortestPath(String cpf, String tripName) throws NotFoundException, InexistentEntryException, DuplicateEntryException, InsufficientSpotsException, TheresNoEntryException{
         return controller.shortestPath(cpf, tripName);
     }
     
-    public List getCities(){
+    public LinkedList getCities() throws TheresNoCityException{
         return controller.getCities();
+    }
+    
+    public boolean haveCities(){
+        return controller.haveCities();
+    }
+    
+    public LinkedList getUserTrips(User user){
+        return controller.getUserTrips(user);
+    }
+    
+    public boolean haveTrips(User user){
+        return controller.haveTrips(user);
+    }
+    
+    public void removeCityFromTrip(Trip trip, int code) throws InexistentEntryException{
+        controller.removeCityFromTrip(trip, code);
     }
     
 }
