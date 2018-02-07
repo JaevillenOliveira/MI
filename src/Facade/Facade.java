@@ -8,7 +8,9 @@ package Facade;
 import Controller.Controller;
 import Exceptions.*;
 import Model.*;
-import Exceptions.TheresNoEntryException;
+import Exceptions.*;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Calendar;
@@ -66,7 +68,7 @@ public class Facade {
         return controller.insertCityInTrip(cpf, tripName, in, out, code);
     }
     
-    public Iterator shortestPath(String cpf, String tripName) throws NotFoundException, InexistentEntryException, DuplicateEntryException, InsufficientSpotsException, TheresNoEntryException{
+    public Iterator shortestPath(String cpf, String tripName) throws NotFoundException, InexistentEntryException, DuplicateEntryException, InsufficientSpotsException, TheresNoEntryException, NoWaysException{
         return controller.shortestPath(cpf, tripName);
     }
     
@@ -90,4 +92,19 @@ public class Facade {
         controller.removeCityFromTrip(trip, code);
     }
     
+    public boolean changeUserPassword(User user, String oldPw, String newPw) throws NoSuchAlgorithmException, UnsupportedEncodingException{
+        return controller.changeUserPassword(user, oldPw, newPw);
+    }
+    
+    public void removeUser(User user){
+        controller.removeUser(user);
+    }
+    
+    public void readFirstFile(String directory) throws IOException, FileNotFoundException{
+        controller.readCityAndInter(directory);
+    }
+    
+    public void readRoads(String directory) throws IOException, FileNotFoundException{
+    controller.readRoads(directory);
+    }
 }
