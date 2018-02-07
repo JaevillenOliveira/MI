@@ -2,6 +2,7 @@
 package Util;
 
 import java.util.Iterator;
+import java.util.LinkedList;
 
 /**
  *
@@ -121,6 +122,14 @@ public class Queue implements IQueue{
             actual = actual.getNext();
             return ret;
         }   
+    }
+    
+    public LinkedList toList(){
+        LinkedList list = new LinkedList();
+        for(Node aux = head; aux != null; aux = aux.getNext()){
+            list.add(aux.getData());
+        }
+        return list;
     }
 
     

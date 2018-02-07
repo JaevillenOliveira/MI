@@ -1,6 +1,7 @@
 
 package Util;
 
+import Exceptions.ThereNoKeysException;
 import Model.Entry;
 import Exceptions.*;
 import java.util.Iterator;
@@ -183,15 +184,19 @@ public class HashSet{
         return size;
     }
     
-    public Iterator iterator() {
+    public Iterator iterator() throws ThereNoKeysException {
         return toList().iterator();
     }
 
     /**
      * Method that returns a list with all Keys.
      * @return A List with the Keys.
+     * @throws ThereNoKeysException When there's no keys In HashSet.
      */
-    public LinkedList toList(){
+    public LinkedList toList() throws ThereNoKeysException{
+        if(size == 0){
+            throw new ThereNoKeysException();
+        }
         LinkedList list = new LinkedList();
         for(int i = 0; i < keys.length; i++){
             if(keys[i] != null && !keys[i].equals(EMPTY)){
