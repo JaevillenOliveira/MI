@@ -7,8 +7,11 @@ import Exceptions.DontHaveTripsException;
 import Exceptions.*;
 import Model.*;
 import Util.*;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -20,6 +23,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Scanner;
 import java.util.Stack;
+import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -160,6 +164,14 @@ public class Controller {
      */
     public Intersection addIntersection (TypeIntersection type, double latitude, double longitude, int code) throws DuplicateEntryException{
         Intersection intersection = new Intersection(type, latitude, longitude, code);
+        
+        cities.addVertex(intersection);
+        
+        return intersection;
+    }
+    
+    public Intersection addIntersection(double latitude, double longitude, int code) throws DuplicateEntryException{
+        Intersection intersection = new Intersection(latitude, longitude, code);
         
         cities.addVertex(intersection);
         
@@ -478,62 +490,145 @@ public class Controller {
         spots.remove(remove);
     }
     
-    public void readEdges(String directory) throws FileNotFoundException, InexistentEntryException, AlreadyHasAdjacency, InexistentVertexException, LoopIsNotAllowedException, DuplicateEntryException{
-        File arq = new File(directory);
-        Scanner scan = new Scanner(arq);
+    public boolean changeUserPassword(User user, String oldPw, String newPw) throws NoSuchAlgorithmException, UnsupportedEncodingException{
+        String oldPw_hash = this.hashPassword(oldPw);
         
-        while(scan.hasNext()){
-            int codeA = scan.nextInt();
-            int codeB = scan.nextInt();
-            double km = Double.parseDouble(scan.next());
-           
-            City cityA = null, cityB = null;
-            Intersection interA = null, interB = null;
-            try{
-                cityA = this.searchCity(codeA);
-            }catch(InexistentEntryException ex){
-                interA = this.searchIntersection(codeA);
-            }
+        if(!user.getPassword().equals(oldPw_hash)){
+            return false;
+        }
+        else{
+            String newPw_hash = this.hashPassword(newPw);
+            user.setPassword(newPw_hash);
+            return true;
+        }
+    }
+    public void removeUser(User user){
+        try{
+            users.remover(user);
+        } catch (NotFoundException ex) {
+            //Will never enter here.
+        }
+    }
+    
+    public void readCityAndInter(String directory) throws FileNotFoundException, IOException{
+        File arq = new File(directory);
+        
+        FileReader file = new FileReader(arq);
+        BufferedReader br = new BufferedReader(file);
+        
+        String line = br.readLine(); 
+        
+        while(line != null){
             
-           try{
-                cityB = this.searchCity(codeB);
-            }catch(InexistentEntryException ex){
-                interB = this.searchIntersection(codeB);
+            StringTokenizer token = new StringTokenizer(line);
+            int colls = token.countTokens();
+            if(colls == 4){
+                String type = token.nextToken();
+                String code = token.nextToken();
+                String lat = token.nextToken();
+                String longi = token.nextToken();
+                
+                int intCode = Integer.parseInt(code);
+                double latDouble = Double.parseDouble(lat);
+                double longiDouble = Double.parseDouble(longi);
+
+                if(type.equals("R")){
+                    Intersection inter;
+                    
+                    try{
+                        inter = this.addIntersection(TypeIntersection.ROTULA, latDouble, longiDouble, intCode);
+                    } catch (DuplicateEntryException ex) {
+                        //If there's already an Intersection with this Code, it'll not add other Inter.
+                    }
+                }
+                else if(type.equals("C")){
+                    Intersection inter;
+                    
+                    try{
+                        inter = this.addIntersection(TypeIntersection.CROSSING, latDouble, longiDouble, intCode);
+                    } catch (DuplicateEntryException ex) {
+                        //If there's already an Intersection with this Code, it'll not add other Inter.
+                    }
+                }
+                else if(type.equals("S")){
+                    Intersection inter;
+                    
+                    try{
+                        inter = this.addIntersection(TypeIntersection.SEMAPHORE, latDouble, longiDouble, intCode);
+                    } catch (DuplicateEntryException ex) {
+                        //If there's already an Intersection with this Code, it'll not add other Inter.
+                    }
+                }
+                line = br.readLine();
             }
-           
-            if (cityA != null && cityB != null){
-                this.addRoad(cityA, cityB, km);
-            }
-            else if(interA != null && interB != null){
-                this.addRoad(interA, interB, km);
-            }
-            else if(cityA != null && interB != null) {
-                this.addRoad(interB, cityA, km);
-            }
-            else{
-                this.addRoad(interA, cityB, km);
+            else if(colls > 4){
+                String cityName = "";
+                int name = colls - 4;
+                for(int i = 0; i < name; i++){
+                    if(i == 0){
+                        cityName = token.nextToken();
+                    }
+                    else{
+                        cityName = cityName + " " + token.nextToken();
+                    }
+                }
+                String code = token.nextToken();
+                String lat = token.nextToken();
+                String longi = token.nextToken();
+                String pop = token.nextToken();
+                
+                int intCode = Integer.parseInt(code);
+                double latDouble = Double.parseDouble(lat);
+                double longiDouble = Double.parseDouble(longi);
+                double popDouble = Double.parseDouble(pop);
+                City city;
+                try{
+                    city = this.addCity(cityName, latDouble, longiDouble, intCode, popDouble);
+                } catch (DuplicateEntryException ex) {
+                    //If there's already a City with this Code, it'll not add other City.
+                }
+                line = br.readLine();
             }
         }
-        scan.close();
         
     }
     
-    public void readCities(String directory) throws FileNotFoundException, DuplicateEntryException{
+    public void readRoads(String directory) throws FileNotFoundException, IOException{
+        
         File arq = new File(directory);
-        Scanner scan = new Scanner(arq);
         
-        scan.useDelimiter("\u0009");
-
-        while(scan.hasNext()){
-            String nome = scan.next();
-            int code = scan.nextInt();
-            double latitude = Double.parseDouble(scan.next());
-            double longitude = Double.parseDouble(scan.next());
-
-            this.addCity(nome.substring(nome.indexOf("\n") + 1), latitude, longitude, code, 0);
+        FileReader file = new FileReader(arq);
+        BufferedReader br = new BufferedReader(file);
+        
+        String line = br.readLine();
+        
+        while(line != null){
+            StringTokenizer token = new StringTokenizer(line);
+            String start = token.nextToken();
+            String end = token.nextToken();
+            String weight = token.nextToken();
+            
+            int startCode = Integer.parseInt(start);
+            int endCode = Integer.parseInt(end);
+            double weightDouble = Double.parseDouble(weight);
+            City cityA = null;
+            City cityB = null;
+            try{
+                cityA = this.searchCity(startCode);
+                cityB = this.searchCity(endCode);
+                this.addRoad(cityA, cityB, weightDouble);
+            }
+             catch (InexistentEntryException ex) {
+                //If any of both Cities doesn't exist, it'll not add a Road to System.
+            } catch (AlreadyHasAdjacency ex) {
+                //If there's already a Road between these cities.
+            } catch (InexistentVertexException ex) {
+                //If one of the cities doesn't exist.
+            } catch (LoopIsNotAllowedException ex) {
+                //If both cities are equal.
+            } catch (DuplicateEntryException ex) {
+            }
+            line = br.readLine();
         }
-        
-        
     }
-        
 }
