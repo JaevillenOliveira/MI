@@ -319,8 +319,9 @@ public class Graph implements IGraph{
      * @param paths A HashMap with the shortest paths of the Graph.
      * @return A Stack with the points of the shortest route.
      * @throws InexistentEntryException
+     * @throws Exceptions.NoWaysException
      */
-    public Stack <EntryDjikstra> path (Object start, Object end, HashMap paths) throws InexistentEntryException{
+    public Stack <EntryDjikstra> path (Object start, Object end, HashMap paths) throws InexistentEntryException, NoWaysException{
         
         Stack <EntryDjikstra> stack = new Stack();
         
@@ -328,7 +329,12 @@ public class Graph implements IGraph{
         Vertex e = (Vertex) this.getVertex(end);
         
         while(!s.equals(e)){
-            stack.push((EntryDjikstra) ((Entry) paths.get(e)).getValue());
+            try{
+                stack.push((EntryDjikstra) ((Entry) paths.get(e)).getValue());
+            }catch(InexistentEntryException ex){
+               throw new NoWaysException();
+            }
+            
             e = stack.peek().getPrev();
         }
         stack.push((EntryDjikstra) ((Entry) paths.get(e)).getValue());

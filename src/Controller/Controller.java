@@ -368,7 +368,7 @@ public class Controller {
      * @throws DuplicateEntryException 
      * @throws InsufficientSpotsException If the Trip don't has a least two points.
      */
-    public Iterator shortestPath (String cpf, String tripName) throws NotFoundException, InexistentEntryException, DuplicateEntryException, InsufficientSpotsException, TheresNoEntryException{
+    public Iterator shortestPath (String cpf, String tripName) throws NotFoundException, InexistentEntryException, DuplicateEntryException, InsufficientSpotsException, TheresNoEntryException, NoWaysException{
 
         Trip trip = this.searchTrip(cpf, tripName);
         ArrayList spots = trip.getSpots();
