@@ -13,8 +13,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.LinkedList;
 import javafx.application.Application;
-import javafx.collections.ObservableList;
-import javafx.collections.ObservableListBase;
 import javafx.event.*;
 import javafx.geometry.*;
 import javafx.scene.Cursor;
@@ -48,6 +46,7 @@ public class Main extends Application{
     private static Scene addCityToTripScene;
     private static Scene removeCityFromTripScene;
     private static Scene tripsScene;
+    private static Scene userSettingsScene;
 
     /**
      * Main method.
@@ -55,17 +54,16 @@ public class Main extends Application{
      */
     public static void main(String[] args) throws IOException, NoSuchAlgorithmException, UnsupportedEncodingException, DuplicatedDataException{
         facade = new Facade();
+        facade.readFirstFile("Cities.txt");
+        facade.readRoads("Roads.txt");
         launch(args);
     }
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        
         drawSignUpScene(primaryStage);
         drawUserScene(primaryStage);
         drawAdminScene(primaryStage);
-        drawAddCityScene(primaryStage);
-        drawCreateTripScene(primaryStage);
         
         GridPane grid = new GridPane();
         grid.setAlignment(Pos.TOP_CENTER);
@@ -112,12 +110,14 @@ public class Main extends Application{
                         actualUser = user;
                         cpfGetter.setText("");
                         pwGetter.setText("");
+                        alertInfo("Welcome, "+actualUser.getName().toUpperCase());
                         primaryStage.setScene(userScene);
                     }
                     else{
                         actualUser = user;
                         cpfGetter.setText("");
                         pwGetter.setText("");
+                        alertInfo("Welcome, "+actualUser.getName().toUpperCase());
                         primaryStage.setScene(adminScene);
                     }
                 } catch (NotFoundException ex) {
@@ -300,6 +300,10 @@ public class Main extends Application{
             btnBar.getButtons().add(new Text());
         }
         Button settings = new Button("Settings");
+        settings.setOnAction((ActionEvent event)->{
+            drawUserSettingsScene(primaryStage);
+            primaryStage.setScene(userSettingsScene);
+        });
         btnBar.getButtons().add(settings);
         
         btnBar.getButtons().add(logOut);
@@ -324,6 +328,7 @@ public class Main extends Application{
         Button createTrip = new Button("Create Trip");
         createTrip.setMinWidth(200);
         createTrip.setOnAction((ActionEvent event)->{
+            drawCreateTripScene(primaryStage);
             primaryStage.setScene(createTripScene);
         });
         
@@ -427,6 +432,7 @@ public class Main extends Application{
         Button addCity = new Button("AddCity");
         addCity.setMinWidth(100);
         addCity.setOnAction((ActionEvent event)->{
+            drawAddCityScene(primaryStage);
             primaryStage.setScene(addCityScene);
         });
         
@@ -1275,6 +1281,110 @@ public class Main extends Application{
         });
         back.setTranslateX(275);
         bp.setBottom(back);
+    }
+    
+    private void drawUserSettingsScene(Stage primaryStage){
+        GridPane grid = new GridPane();
+        grid.setAlignment(Pos.TOP_CENTER);
+        grid.setHgap(10);
+        grid.setVgap(10);
+        grid.setPadding(new Insets(60, 60, 60, 60));
+        
+        userSettingsScene = new Scene(grid, 720, 650);
+        
+        Label title = new Label("Settings");
+        title.setFont(Font.font("Comic Sans MS",  50));
+        title.setTextFill(Color.MEDIUMTURQUOISE);
+        grid.add(title, 0, 0, 2, 1);
+        
+        Text oldPw = new Text("Old Password: ");
+        grid.add(oldPw, 0, 2);
+        
+        PasswordField oldPwGetter = new PasswordField();
+        grid.add(oldPwGetter, 1, 2);
+        
+        Text newPw = new Text("New Password: ");
+        grid.add(newPw, 0, 4);
+        
+        PasswordField newPwGetter = new PasswordField();
+        grid.add(newPwGetter, 1, 4);
+        
+        Text CnewPw = new Text("New Password: ");
+        grid.add(CnewPw, 0, 6);
+        
+        PasswordField CnewPwGetter = new PasswordField();
+        grid.add(CnewPwGetter, 1, 6);
+        
+        Button apply = new Button("Apply");
+        apply.setOnAction((ActionEvent event)->{
+            if(oldPwGetter.getText().isEmpty() || newPwGetter.getText().isEmpty() || CnewPwGetter.getText().isEmpty()){
+                alert("There are Empty Field");
+                oldPwGetter.setText("");
+                newPwGetter.setText("");
+                CnewPwGetter.setText("");
+            }
+            else if(!newPwGetter.getText().equals(CnewPwGetter.getText())){
+                alert("Confirm Password Doesn't match.");
+                newPwGetter.setText("");
+                CnewPwGetter.setText("");
+            }
+            else{
+                boolean changed = false;
+                try{
+                    changed = facade.changeUserPassword(actualUser, oldPwGetter.getText(), newPwGetter.getText());
+                } catch (NoSuchAlgorithmException ex) {
+                } catch (UnsupportedEncodingException ex) {
+                }
+                if(changed == false){
+                    alert("Your Old Password is Wrong.");
+                    oldPwGetter.setText("");
+                    newPwGetter.setText("");
+                    CnewPwGetter.setText("");
+                }
+                else{
+                    alertInfo("Password changed successfully.");
+                    oldPwGetter.setText("");
+                    newPwGetter.setText("");
+                    CnewPwGetter.setText("");
+                }
+            }
+        
+        });
+        apply.setTextFill(Color.GREEN);
+        grid.add(apply, 0, 8);
+        
+        Button delete = new Button("Delete Account");
+        delete.setOnAction((ActionEvent event)->{
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setHeaderText(null);
+            alert.setTitle("Delete Account?");
+            alert.setContentText("Are you Sure?");
+            alert.showAndWait();
+            ButtonType type = alert.getResult();
+            
+            if(type.getButtonData() == ButtonData.OK_DONE){
+                facade.removeUser(actualUser);
+                actualUser = null;
+                alert("Account Deleted.");
+                primaryStage.setScene(main);
+                oldPwGetter.setText("");
+                newPwGetter.setText("");
+                CnewPwGetter.setText("");
+            }
+        });
+        delete.setTextFill(Color.RED);
+        grid.add(delete, 1, 8);
+        
+        Button back = new Button("Back");
+        back.setOnAction((ActionEvent event)->{
+            oldPwGetter.setText("");
+            newPwGetter.setText("");
+            CnewPwGetter.setText("");
+            primaryStage.setScene(userScene);
+        });
+        grid.add(back, 2, 8);
+        
+        
     }
     
     private void alert(String message){
