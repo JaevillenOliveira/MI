@@ -1,13 +1,14 @@
 
 package Model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
  *
  * @author Jaevillen and Almir
  */
-public class City extends Spot{
+public class City extends Spot implements Serializable{
     
     private String name;
     private double population;
@@ -81,6 +82,6 @@ public class City extends Spot{
     
     @Override
     public String toString(){
-        return name;
+        return this.getCode() + "-"+this.getName();
     }
 }

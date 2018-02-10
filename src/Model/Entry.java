@@ -1,7 +1,9 @@
 
 package Model;
 
-public class Entry {
+import java.io.Serializable;
+
+public class Entry implements Serializable{
     
     private Object key;
     private Object value;

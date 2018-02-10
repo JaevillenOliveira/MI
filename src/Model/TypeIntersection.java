@@ -5,11 +5,13 @@
  */
 package Model;
 
+import java.io.Serializable;
+
 /**
  *
  * @author Jaevillen
  */
-public enum TypeIntersection {
+public enum TypeIntersection implements Serializable{
     ROTULA, 
     CROSSING,
     SEMAPHORE;
