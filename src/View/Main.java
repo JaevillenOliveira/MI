@@ -4,14 +4,20 @@ package View;
 import Exceptions.*;
 import Model.*;
 import Facade.Facade;
+import java.awt.Desktop;
+import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.URI;
 import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.application.Application;
 import javafx.event.*;
 import javafx.geometry.*;
@@ -25,7 +31,11 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import javafx.stage.FileChooser;
+import javafx.stage.DirectoryChooser;
+import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 
 /**
  *
@@ -40,22 +50,30 @@ public class Main extends Application{
     private static Scene userScene;
     private static Scene adminScene;
     private static Scene addCityScene;
-    private static Scene addRoadScene;
+    private static Scene addInterScene;
+    private static Scene addRoadBetween2CitiesScene;
+    private static Scene addRoadBetween2InterSectionsScene;
+    private static Scene addRoadBetweenCityAndInterScene;
     private static Scene addPlaceToEatScene;
     private static Scene createTripScene;
     private static Scene addCityToTripScene;
     private static Scene removeCityFromTripScene;
     private static Scene tripsScene;
     private static Scene userSettingsScene;
+    private static Scene startTripScene;
 
     /**
      * Main method.
      * @param args 
      */
-    public static void main(String[] args) throws IOException, NoSuchAlgorithmException, UnsupportedEncodingException, DuplicatedDataException{
+    public static void main(String[] args) throws NoSuchAlgorithmException, UnsupportedEncodingException, DuplicatedDataException{
+        
         facade = new Facade();
-        facade.readFirstFile("Cities.txt");
-        facade.readRoads("Roads.txt");
+        try{
+            facade.loadDataFile();
+        } catch (IOException | ClassNotFoundException ex) {
+            System.out.println("batata carne com doce");
+        }
         launch(args);
     }
 
@@ -72,7 +90,6 @@ public class Main extends Application{
         grid.setPadding(new Insets(140, 140, 140, 140));
         
         main = new Scene(grid, 720, 650);
-        
         
         Label title = new Label("RoadTrips");
         title.setFont(Font.font("Comic Sans MS",  50));
@@ -131,7 +148,7 @@ public class Main extends Application{
         });
         bp.setCenter(signIn);
         
-        Text register = new Text("Don't have an Account? CREATE ONE.");
+        Text register = new Text("Don't have an Account? CREATE ONE");
         register.setOnMouseEntered((MouseEvent event)->{
             register.setCursor(Cursor.HAND);
             register.setFill(Color.BLUE);
@@ -151,22 +168,105 @@ public class Main extends Application{
         grid.add(registerBP, 0, 8, 2, 1);
         registerBP.setCenter(register);
         
+        Text importFile = new Text("Import City and Inter File");
+        importFile.setOnMouseEntered((MouseEvent event)->{
+            importFile.setCursor(Cursor.HAND);
+            importFile.setFill(Color.BLUE);
+            importFile.setUnderline(true);
+        });
+        importFile.setOnMouseExited((MouseEvent event)->{
+            importFile.setFill(Color.BLACK);
+            importFile.setUnderline(false);
+        });
+        importFile.setOnMouseClicked((MouseEvent event)->{
+            importFile.setCursor(Cursor.DEFAULT);
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Open Resource File");
+            fileChooser.getExtensionFilters().add(new ExtensionFilter("Text Files", "*.txt"));
+        
+            File selectedFile = fileChooser.showOpenDialog(primaryStage);
+            if(selectedFile != null){
+                try {
+                    facade.readFirstFile(selectedFile.getPath());
+                    alertInfo("Imported with Success!");
+                } catch (IOException ex) {
+                    alert("It's Impossible to Read City File.");
+                }
+            }
+        });
+        
+        BorderPane importBP = new BorderPane();
+        grid.add(importBP, 0, 10, 2, 1);
+        importBP.setCenter(importFile);
+        
+        Text importRoadsFile = new Text("Import Roads File");
+        importRoadsFile.setOnMouseEntered((MouseEvent event)->{
+            importRoadsFile.setCursor(Cursor.HAND);
+            importRoadsFile.setFill(Color.BLUE);
+            importRoadsFile.setUnderline(true);
+        });
+        importRoadsFile.setOnMouseExited((MouseEvent event)->{
+            importRoadsFile.setFill(Color.BLACK);
+            importRoadsFile.setUnderline(false);
+        });
+        importRoadsFile.setOnMouseClicked((MouseEvent event)->{
+            importRoadsFile.setCursor(Cursor.DEFAULT);
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Open Resource File");
+            fileChooser.getExtensionFilters().add(new ExtensionFilter("Text Files", "*.txt"));
+        
+            File selectedFile = fileChooser.showOpenDialog(primaryStage);
+            if(selectedFile != null){
+                try {
+                    facade.readRoads(selectedFile.getPath());
+                    alertInfo("Imported with Success!");
+                } catch (IOException ex) {
+                    alert("It's Impossible to Read Roads File.");
+                }
+            }
+        });
+        
+        BorderPane roadFileBp = new BorderPane();
+        grid.add(roadFileBp, 0, 12, 2, 1);
+        roadFileBp.setCenter(importRoadsFile);
+        
+        
         BorderPane footerPane = new BorderPane();
         Label footer = new Label("® Developed by Jaevillen and Almir");
+        footer.setOnMouseClicked((MouseEvent event)->{
+            Desktop desktop = Desktop.isDesktopSupported() ? Desktop.getDesktop() : null;
+            if(desktop != null && desktop.isSupported(Desktop.Action.BROWSE)){
+                try {
+                    desktop.browse(new URI("https://github.com/AlmirNeeto99"));
+                    desktop.browse(new URI("https://github.com/JaevillenOliveira"));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
         footer.setFont(Font.font("Comic Sans MS",  12));
         footerPane.setCenter(footer);
-        grid.add(footerPane, 0, 30, 2, 1);
+        grid.add(footerPane, 0, 27, 2, 1);
         
         primaryStage.setTitle("RoadTrips");
         primaryStage.setHeight(650);
         primaryStage.setWidth(720);
        
         primaryStage.setResizable(false);
-        Image image = new Image("View\\icon.jpg");
-        primaryStage.getIcons().add(image);
         
+        primaryStage.setOnCloseRequest((WindowEvent event)->{
+            try {
+                facade.saveDataFile();
+            } catch (IOException ex) {
+                ex.getStackTrace();
+            }
+        });
+        
+        Image image = new Image("View/icon.jpg");
+        primaryStage.getIcons().add(image);
         primaryStage.setScene(main);
         primaryStage.show();  
+
     }
     
     private void drawSignUpScene(Stage primaryStage){
@@ -374,10 +474,23 @@ public class Main extends Application{
             }
         });
         
+        Button startTrip = new Button("Start Trip");
+        startTrip.setMinWidth(200);
+        startTrip.setOnAction((ActionEvent event)->{
+            if(!facade.haveTrips(actualUser)){
+                alert("There's no Trips registered in your account.");
+            }
+            else{
+                drawStartTripScene(primaryStage);
+                primaryStage.setScene(startTripScene);
+            }
+        });
+        
         fp.getChildren().add(createTrip);
         fp.getChildren().add(addCityToTrip);
         fp.getChildren().add(removeCityFromTrip);
         fp.getChildren().add(manageTrips);
+        fp.getChildren().add(startTrip);
     }
     
     private void drawAdminScene(Stage primaryStage){
@@ -430,27 +543,62 @@ public class Main extends Application{
         bp.setTop(fp);
         
         Button addCity = new Button("AddCity");
-        addCity.setMinWidth(100);
+        addCity.setMinWidth(135);
         addCity.setOnAction((ActionEvent event)->{
             drawAddCityScene(primaryStage);
             primaryStage.setScene(addCityScene);
         });
         
+        Button addInter = new Button("AddIntersection");
+        addInter.setMinWidth(135);
+        addInter.setOnAction((ActionEvent event)->{
+            drawAddInterScene(primaryStage);
+            primaryStage.setScene(addInterScene);
+        });
+        
         
         Button addRoad = new Button("AddRoad");
-        addRoad.setMinWidth(100);
+        addRoad.setMinWidth(135);
         addRoad.setOnAction((ActionEvent event)->{
             if(facade.haveCities()){
-                drawAddRoadScene(primaryStage);
-                primaryStage.setScene(addRoadScene);
+                drawAddRoadBetWeen2CitiesScene(primaryStage);
+                primaryStage.setScene(addRoadBetween2CitiesScene);
             }
             else{
                 alert("There's no City Registered in System.");
             }
         });
         
+        
+        Button addRoadBetweenTwoInter = new Button("AddRoadBwInters");
+        addRoadBetweenTwoInter.setMinWidth(135);
+        addRoadBetweenTwoInter.setOnAction((ActionEvent event)->{
+            if(facade.hasInter()){
+                drawAddRoadBetween2InterSectionsScene(primaryStage);
+                primaryStage.setScene(addRoadBetween2InterSectionsScene);
+            }
+            else{
+                alert("There's no Inter Registered in System.");
+            }
+        });
+        
+        Button addRoadBetweenCityAndInter = new Button("AddRoadBwCity&Inter");
+        addRoadBetweenCityAndInter.setMinWidth(135);
+        addRoadBetweenCityAndInter.setOnAction((ActionEvent event)->{
+            if(facade.hasInter() && facade.haveCities()){
+                drawAddRoadBetweenCityAndInterScene(primaryStage);
+                primaryStage.setScene(addRoadBetweenCityAndInterScene);
+            }
+            else if(!facade.hasInter()){
+                alert("There's no Inter Registered in System.");
+            }
+            else if(!facade.haveCities()){
+                alert("There's no City Registered in System.");
+            }
+        });
+        
         Button addPlaceToEat = new Button("Add Place to Eat");
-        addPlaceToEat.setMinWidth(100);
+        addPlaceToEat.setMinWidth(135);
         addPlaceToEat.setOnAction((ActionEvent event)->{
             if(facade.haveCities()){
                 drawAddPlaceToEatScene(primaryStage);
@@ -462,11 +610,15 @@ public class Main extends Application{
         });
         
         fp.getChildren().add(addCity);
+        fp.getChildren().add(addInter);
         fp.getChildren().add(addRoad);
+        fp.getChildren().add(addRoadBetweenTwoInter);
+        fp.getChildren().add(addRoadBetweenCityAndInter);
         fp.getChildren().add(addPlaceToEat);   
     }
     
     private void drawAddCityScene(Stage primaryStage){
+        
         GridPane grid = new GridPane();
         grid.setAlignment(Pos.TOP_CENTER);
         grid.setHgap(10);
@@ -595,7 +747,123 @@ public class Main extends Application{
         btnPane.setRight(cancel);
     }
     
-    private void drawAddRoadScene(Stage primaryStage){
+    private void drawAddInterScene(Stage primaryStage){
+        
+        GridPane grid = new GridPane();
+        grid.setAlignment(Pos.TOP_CENTER);
+        grid.setHgap(10);
+        grid.setVgap(10);
+        grid.setPadding(new Insets(60, 60, 60, 60));
+        
+        addInterScene = new Scene(grid, 720, 650);
+        
+        Label title = new Label("Adding Inter");
+        title.setPadding(new Insets(0, 0, 60, 0));
+        title.setFont(Font.font("Comic Sans MS",  50));
+        title.setTextFill(Color.MEDIUMTURQUOISE);
+        grid.add(title, 0, 0, 2, 1);
+        
+        Text interType = new Text("InterType: ");
+        grid.add(interType, 0 ,2);
+        
+        ComboBox typeBox = new ComboBox();
+        typeBox.setPromptText("InterType");
+        grid.add(typeBox, 1, 2);
+        
+        typeBox.getItems().add(TypeIntersection.CROSSING);
+        typeBox.getItems().add(TypeIntersection.SEMAPHORE);
+        typeBox.getItems().add(TypeIntersection.ROTULA);
+        
+        Text interCode = new Text("Inter Code: ");
+        grid.add(interCode, 0, 4);
+        
+        TextField interCodeGetter = new TextField();
+        grid.add(interCodeGetter, 1, 4);
+        
+        Text longitude = new Text("Longitude: ");
+        grid.add(longitude, 0, 6);
+        
+        TextField longitudeGetter = new TextField();
+        grid.add(longitudeGetter, 1, 6);
+        
+        Text latitude = new Text("Latitude: ");
+        grid.add(latitude, 0, 8);
+        
+        TextField latitudeGetter = new TextField();
+        grid.add(latitudeGetter, 1, 8);
+        
+        BorderPane btnBp = new BorderPane();
+        grid.add(btnBp, 0, 12, 2, 1);
+        
+        Button add = new Button("Add");
+        add.setOnAction((ActionEvent event)->{
+            boolean isOk = true;
+            if(interCodeGetter.getText().isEmpty() || longitudeGetter.getText().isEmpty() || latitudeGetter.getText().isEmpty()){
+                alert("There are Empty Fields.");
+            }
+            else if(typeBox.getSelectionModel().getSelectedItem() == null){
+                alert("Select a Type in \"IntersectionType\" Field.");
+            }
+            else{
+                TypeIntersection type = (TypeIntersection)typeBox.getSelectionModel().getSelectedItem();
+                int code = 0;
+                try{
+                    code = Integer.parseInt(interCodeGetter.getText());
+                }
+                catch(NumberFormatException nfx){
+                    alert("Type a Number in \"InterCode\" Field like this: X");
+                    interCodeGetter.setText("");
+                    isOk = false;
+                }
+                
+                double latitudeDouble = 0 ;
+                try{
+                    latitudeDouble = Double.parseDouble(latitudeGetter.getText());
+                }
+                catch(NumberFormatException nfx){
+                    alert("Type a Number in \"Latitude\" Field like this: X.XXX");
+                    latitudeGetter.setText("");
+                    isOk = false;
+                }
+                
+                double longitudeDouble = 0;
+                try{
+                    longitudeDouble = Double.parseDouble(longitudeGetter.getText());
+                }
+                catch(NumberFormatException nfx){
+                    alert("Type a Number in \"Longitude\" Field like this: X.XXX");
+                    longitudeGetter.setText("");
+                    isOk = false;
+                }
+                if(isOk == true){
+                    try{
+                    facade.addIntersection(type, latitudeDouble, longitudeDouble, code);
+                    alertInfo("Intersection Added with Success.");
+                    primaryStage.setScene(adminScene);
+                    } catch (DuplicateEntryException ex) {
+                        alert("There's already an Intersection with this Code.");
+                        longitudeGetter.setText("");
+                        latitudeGetter.setText("");
+                        interCodeGetter.setText("");
+                    }
+                }
+            }
+        });
+        
+        Button cancel = new Button("Cancel");
+        cancel.setOnAction((ActionEvent event)->{
+            primaryStage.setScene(adminScene);
+            interCodeGetter.setText("");
+            latitudeGetter.setText("");
+            longitude.setText("");
+        });
+        cancel.setTextFill(Color.RED);
+        
+        btnBp.setLeft(add);
+        btnBp.setRight(cancel);
+    }
+    
+    private void drawAddRoadBetWeen2CitiesScene(Stage primaryStage){
         
         GridPane grid = new GridPane();
         grid.setAlignment(Pos.TOP_CENTER);
@@ -603,7 +871,7 @@ public class Main extends Application{
         grid.setVgap(10);
         grid.setPadding(new Insets(100, 100, 100, 100));
         
-        addRoadScene = new Scene(grid, 720, 650);
+        addRoadBetween2CitiesScene = new Scene(grid, 720, 650);
         
         Label title = new Label("Adding Road");
         title.setFont(Font.font("Comic Sans MS",  50));
@@ -614,8 +882,8 @@ public class Main extends Application{
         
         try{
             cities = facade.getCities();
-        } catch (TheresNoCityException ex) {
-            //Shouldn't enter here.
+        } catch (TheresNoCityException ex) { 
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         }
         ComboBox firstCbox = new ComboBox();
         ComboBox secondCbox = new ComboBox();
@@ -624,19 +892,19 @@ public class Main extends Application{
             
         secondCbox.setPromptText("Cities");
         for(City city : cities){
-            firstCbox.getItems().add(city.getCode() + "-" + city.getName());
+            firstCbox.getItems().add(city);
         }
 
         for(City city : cities){
-            secondCbox.getItems().add(city.getCode() + "-" + city.getName());
+            secondCbox.getItems().add(city);
         }
         
-        Text roadSource = new Text("CityCode that Starts: ");
+        Text roadSource = new Text("City that Starts: ");
         grid.add(roadSource, 0, 2);
         
         grid.add(firstCbox, 1, 2);
         
-        Text roadDestiny = new Text("CityCode  that Ends: ");
+        Text roadDestiny = new Text("City  that Ends: ");
         grid.add(roadDestiny, 0, 4);    
         
         grid.add(secondCbox, 1, 4);
@@ -654,16 +922,13 @@ public class Main extends Application{
         add.setOnAction((ActionEvent event)->{
             boolean isOk = true;
             
-            String fullCityA = (String)firstCbox.getSelectionModel().getSelectedItem();
-            String newCityNameA = "";
-            for(int i = 0; fullCityA.charAt(i) != '-'; i++){
-                newCityNameA += fullCityA.charAt(i);
+            if(firstCbox.getSelectionModel().getSelectedItem() == null){
+                alert("Select an City in \"City Field\".");
+                isOk = false;
             }
-            
-            String fullCityB = (String)secondCbox.getSelectionModel().getSelectedItem();
-            String newCityNameB = "";
-            for(int i = 0; fullCityB.charAt(i) != '-'; i++){
-                newCityNameB += fullCityB.charAt(i);
+            else if(secondCbox.getSelectionModel().getSelectedItem() == null){
+                alert("Select an City in \"City Field\".");
+                isOk = false;
             }
             double sizeDouble = 0;
             try{
@@ -674,35 +939,10 @@ public class Main extends Application{
                 alert("Type a Number in \"Road Lenght\" like this: X.XXX");
                 roadSizeGetter.setText("");
             }
-            
-            int cityCodeA = 0;
-            try{
-                cityCodeA = Integer.parseInt(newCityNameA);
-            }
-            catch(NumberFormatException nfx){
-            }
-            
-            int cityCodeB = 0;
-            try{
-                cityCodeB = Integer.parseInt(newCityNameB);
-            }
-            catch(NumberFormatException nfx){
-            }
             if(isOk == true){
-                
-                City cityA = null;
-                try {
-                    cityA = facade.searchCity(cityCodeA);
-                } catch (InexistentEntryException ex) {
-                    //Shouldn't enter here.
-                }
-                City cityB = null;
-                try {
-                    cityB = facade.searchCity(cityCodeB);
-                } catch (InexistentEntryException ex) {
-                    //Shouldn't enter here.
-                }
-                
+                City cityA = (City)firstCbox.getSelectionModel().getSelectedItem();
+            
+                City cityB = (City)secondCbox.getSelectionModel().getSelectedItem();
                 try{
                     facade.addRoad(cityA, cityB, sizeDouble);
                     alertInfo("Road added Successfully.");
@@ -711,9 +951,9 @@ public class Main extends Application{
                 } catch (DuplicateEntryException ex) {
                     alert("There's already a Road between these Cities.");
                 } catch (AlreadyHasAdjacency ex) {
-                   alert("There's already a Road between these Cities. 2");
+                   alert("There's already a Road between these Cities.");
                 } catch (LoopIsNotAllowedException ex) {
-                   alert("You can't add a Road on The Same City.");
+                   alert("You can't add a Road on The Same Cities.");
                 } catch (InexistentVertexException ex) {
                     //Shouldn't enter here.
                 } catch (InexistentEntryException ex) {
@@ -732,6 +972,227 @@ public class Main extends Application{
         btnBP.setLeft(add);
         btnBP.setRight(cancel); 
         
+    }
+    
+    private void drawAddRoadBetween2InterSectionsScene(Stage primaryStage){
+        
+        GridPane grid = new GridPane();
+        grid.setAlignment(Pos.TOP_CENTER);
+        grid.setHgap(10);
+        grid.setVgap(10);
+        grid.setPadding(new Insets(100, 100, 100, 100));
+        
+        addRoadBetween2InterSectionsScene = new Scene(grid, 720, 650);
+        
+        Label title = new Label("Adding Road");
+        title.setFont(Font.font("Comic Sans MS",  50));
+        title.setTextFill(Color.MEDIUMTURQUOISE);
+        grid.add(title, 0, 0, 2, 1);
+        
+        LinkedList<Intersection> inter = null;
+        
+        try{
+            inter = facade.getInter();
+        } catch (TheresNoInterException ex) {
+            //Will never enter here.
+        }
+        ComboBox firstCbox = new ComboBox();
+        ComboBox secondCbox = new ComboBox();
+
+        firstCbox.setPromptText("Intersection: ");
+            
+        secondCbox.setPromptText("Intersection");
+        for(Intersection Inter : inter){
+            firstCbox.getItems().add(Inter);
+        }
+
+        for(Intersection Inter : inter){
+            secondCbox.getItems().add(Inter);
+        }
+        
+        Text roadSource = new Text("Inter that Starts: ");
+        grid.add(roadSource, 0, 2);
+        
+        grid.add(firstCbox, 1, 2);
+        
+        Text roadDestiny = new Text("Inter  that Ends: ");
+        grid.add(roadDestiny, 0, 4);    
+        
+        grid.add(secondCbox, 1, 4);
+        
+        Text roadSize = new Text("Length in KM: ");
+        grid.add(roadSize, 0, 6);
+        
+        TextField roadSizeGetter = new TextField();
+        grid.add(roadSizeGetter, 1, 6);
+        
+        BorderPane btnBP= new BorderPane();
+        grid.add(btnBP, 0, 8, 2, 1);
+        
+        Button add = new Button("Add");
+        add.setOnAction((ActionEvent event)->{
+            boolean isOk = true;
+            if(firstCbox.getSelectionModel().getSelectedItem() == null){
+                alert("Select an Inter in \"Inter Field\".");
+                isOk = false;
+            }
+            else if(secondCbox.getSelectionModel().getSelectedItem() == null){
+                alert("Select an Inter in \"Inter Field\".");
+                isOk = false;
+            }
+            double sizeDouble = 0;
+            try{
+                sizeDouble = Double.parseDouble(roadSizeGetter.getText());
+            }
+            catch(NumberFormatException nfx){
+                isOk = false;
+                alert("Type a Number in \"Road Lenght\" like this: X.XXX");
+                roadSizeGetter.setText("");
+            }
+            if(isOk == true){
+                Intersection interA = (Intersection)firstCbox.getSelectionModel().getSelectedItem();
+            
+                Intersection interB = (Intersection)secondCbox.getSelectionModel().getSelectedItem();
+                try{
+                    facade.addRoad(interA, interB, sizeDouble);
+                    alertInfo("Road added Successfully.");
+                    roadSizeGetter.setText("");
+                    primaryStage.setScene(adminScene);
+                } catch (DuplicateEntryException ex) {
+                    alert("There's already a Road between these Inters.");
+                } catch (AlreadyHasAdjacency ex) {
+                   alert("There's already a Road between these Inters.");
+                } catch (LoopIsNotAllowedException ex) {
+                   alert("You can't add a Road on The Same Inter.");
+                } catch (InexistentVertexException ex) {
+                    //Shouldn't enter here.
+                }
+            }
+                        
+        });
+        Button cancel = new Button("Cancel");
+        cancel.setOnAction((ActionEvent event)->{
+            primaryStage.setScene(adminScene);
+            roadSizeGetter.setText("");
+        });
+        cancel.setTextFill(Color.RED);
+        
+        btnBP.setLeft(add);
+        btnBP.setRight(cancel); 
+        
+    }
+    
+    private void drawAddRoadBetweenCityAndInterScene(Stage primaryStage){
+        
+        GridPane grid = new GridPane();
+        grid.setAlignment(Pos.TOP_CENTER);
+        grid.setHgap(10);
+        grid.setVgap(10);
+        grid.setPadding(new Insets(100, 100, 100, 100));
+        
+        addRoadBetweenCityAndInterScene = new Scene(grid, 720, 650);
+        
+        Label title = new Label("Adding Road");
+        title.setFont(Font.font("Comic Sans MS",  50));
+        title.setTextFill(Color.MEDIUMTURQUOISE);
+        grid.add(title, 0, 0, 2, 1);
+        
+        LinkedList<City> cities = null;
+        try{
+            cities = facade.getCities();
+        } catch (TheresNoCityException ex) { 
+            //Will never enter here.
+        }
+        
+        LinkedList<Intersection> inter = null;
+        try{
+            inter = facade.getInter();
+        } catch (TheresNoInterException ex) {
+            //Will never enter here.
+        }
+        ComboBox firstCbox = new ComboBox();
+        ComboBox secondCbox = new ComboBox();
+
+        firstCbox.setPromptText("Cities");
+            
+        secondCbox.setPromptText("Intersection");
+        
+        for(City city : cities){
+            firstCbox.getItems().add(city);
+        }
+
+        for(Intersection Inter : inter){
+            secondCbox.getItems().add(Inter);
+        }
+        
+        Text roadSource = new Text("City: ");
+        grid.add(roadSource, 0, 2);
+        
+        grid.add(firstCbox, 1, 2);
+        
+        Text roadDestiny = new Text("Inter: ");
+        grid.add(roadDestiny, 0, 4);    
+        
+        grid.add(secondCbox, 1, 4);
+        
+        Text roadSize = new Text("Length in KM: ");
+        grid.add(roadSize, 0, 6);
+        
+        TextField roadSizeGetter = new TextField();
+        grid.add(roadSizeGetter, 1, 6);
+        
+        BorderPane btnBP= new BorderPane();
+        grid.add(btnBP, 0, 8, 2, 1);
+        
+        Button add = new Button("Add");
+        add.setOnAction((ActionEvent event)->{
+            boolean isOk = true;
+            if(firstCbox.getSelectionModel().getSelectedItem() == null){
+                alert("Select an City in \"City Field\".");
+                isOk = false;
+            }
+            else if(secondCbox.getSelectionModel().getSelectedItem() == null){
+                alert("Select an Inter in \"Inter Field\".");
+                isOk = false;
+            }
+            double sizeDouble = 0;
+            try{
+                sizeDouble = Double.parseDouble(roadSizeGetter.getText());
+            }
+            catch(NumberFormatException nfx){
+                isOk = false;
+                alert("Type a Number in \"Road Lenght\" like this: X.XXX");
+                roadSizeGetter.setText("");
+            }
+            if(isOk == true){
+                City cityA = (City)firstCbox.getSelectionModel().getSelectedItem();
+                Intersection interA = (Intersection)secondCbox.getSelectionModel().getSelectedItem();
+                
+                try{
+                    facade.addRoad(interA, cityA, sizeDouble);
+                    alertInfo("Road Added Successfully.");
+                    roadSizeGetter.setText("");
+                    primaryStage.setScene(adminScene);
+                } catch (DuplicateEntryException ex) {
+                    alert("There's already a Road between this City and Inter.");
+                } catch (AlreadyHasAdjacency ex) {
+                    alert("There's already a Road between this City and Inter.");
+                } catch (InexistentVertexException ex) {
+                    //Will never enter Here.
+                } catch (LoopIsNotAllowedException ex) {
+                    //Will never enter Here.
+                }
+            }
+        });
+        Button cancel = new Button("Cancel");
+        cancel.setOnAction((ActionEvent event)->{
+            primaryStage.setScene(adminScene);
+            roadSizeGetter.setText("");
+        });
+        cancel.setTextFill(Color.RED);
+        
+        btnBP.setLeft(add);
+        btnBP.setRight(cancel); 
     }
     
     private void drawAddPlaceToEatScene(Stage primaryStage){
@@ -761,7 +1222,7 @@ public class Main extends Application{
         firstCbox.setPromptText("Cities");
         
         for(City city : cities){
-            firstCbox.getItems().add(city.getCode() + "-" + city.getName());
+            firstCbox.getItems().add(city);
         }
         
         Text city = new Text("Cities: ");
@@ -787,11 +1248,11 @@ public class Main extends Application{
         ComboBox rateCB = new ComboBox();
         rateCB.setPromptText("Rating");
         
-        rateCB.getItems().add("TERRIBLE");
-        rateCB.getItems().add("POOR");
-        rateCB.getItems().add("REGULAR");
-        rateCB.getItems().add("GOOD");
-        rateCB.getItems().add("GREAT");
+        rateCB.getItems().add(Rate.PÉSSIMO);
+        rateCB.getItems().add(Rate.RUIM);
+        rateCB.getItems().add(Rate.REGULAR);
+        rateCB.getItems().add(Rate.BOM);
+        rateCB.getItems().add(Rate.ÓTIMO);
         
         grid.add(rateCB, 1, 8);
         
@@ -809,54 +1270,21 @@ public class Main extends Application{
                 addressGetter.setText("");
             }
             else{
-                String fullCityA = (String)firstCbox.getSelectionModel().getSelectedItem();
-                if(fullCityA == null){
+                if(firstCbox.getSelectionModel().getSelectedItem() == null){
                     alert("Please, select a City on Selector Field.");
                     isOk = false;
                 }
                 
-                int cityCode = 0;
-                
-                if(isOk == true){
-                    String newCityNameA = "";
-                    for(int i = 0; fullCityA.charAt(i) != '-'; i++){
-                        newCityNameA += fullCityA.charAt(i);
-                    }
-                    try{
-                        cityCode = Integer.parseInt(newCityNameA);
-                    }
-                    catch(NumberFormatException nfx){
-                        //Shouldn't enter here.
-                    }
-                }
-                
-                int ratingInt = 0;
-                String rating = (String)rateCB.getSelectionModel().getSelectedItem();
-                
-                if(rating == null){
+                if(rateCB.getSelectionModel().getSelectedItem() == null){
                     alert("Please, select a Rate on Selector Field.");
                     isOk = false;
                 }
                 
                 if(isOk == true){
-                    if(rating.equals("TERRIBLE")){
-                        ratingInt = 1;
-                    }
-                    else if(rating.equals("POOR")){
-                        ratingInt = 2;
-                    }
-                    else if(rating.equals("REGULAR")){
-                        ratingInt = 3;
-                    }
-                    else if(rating.equals("GOOD")){
-                        ratingInt = 4;
-                    }
-                    else if(rating.equals("GREAT")){
-                        ratingInt = 5;
-                    }
-                
+                    City cityA = (City)firstCbox.getSelectionModel().getSelectedItem();
+                    Rate rateCity = (Rate)rateCB.getSelectionModel().getSelectedItem();
                     try{
-                        facade.addEatPoint(cityCode, placeNameGetter.getText(), addressGetter.getText(), ratingInt);
+                        facade.addEatPoint(cityA.getCode(), placeNameGetter.getText(), addressGetter.getText(), rateCity);
                         alertInfo("Place added Successfully.");
                         placeNameGetter.setText("");
                         addressGetter.setText("");
@@ -1385,6 +1813,105 @@ public class Main extends Application{
         grid.add(back, 2, 8);
         
         
+    }
+    
+    private void drawStartTripScene(Stage primaryStage){
+        
+        GridPane grid = new GridPane();
+        grid.setAlignment(Pos.TOP_CENTER);
+        grid.setHgap(10);
+        grid.setVgap(10);
+        grid.setPadding(new Insets(60, 60, 60, 60));
+        
+        startTripScene = new Scene(grid, 720, 650);
+        
+        Label title = new Label("Start Trip");
+        title.setPadding(new Insets(0, 0, 0, 180));
+        title.setFont(Font.font("Comic Sans MS",  50));
+        title.setTextFill(Color.MEDIUMTURQUOISE);
+        grid.add(title, 0, 0, 2, 1);
+        
+        Text trips = new Text("Your Trips: ");
+        trips.setTranslateX(200);
+        grid.add(trips, 0, 2);
+        
+        LinkedList<Trip> userTrips;
+        
+        userTrips = facade.getUserTrips(actualUser);
+        ComboBox tripsBox = new ComboBox();
+        tripsBox.setTranslateX(200);
+        tripsBox.setPromptText("Trips");
+        if(userTrips.size() > 0){
+            for(Trip trip : userTrips){
+                tripsBox.getItems().add(trip.getName());
+            }
+        }
+        grid.add(tripsBox, 1, 2);
+        Button select = new Button("Select");
+        grid.add(select, 2, 2);
+        
+        BorderPane bp = new BorderPane();
+        grid.add(bp, 0, 4, 2, 1);
+        
+        ScrollPane sp = new ScrollPane();
+        sp.setMinWidth(600);
+        
+        ListView viewTrips = new ListView();
+        viewTrips.setMinWidth(600);
+        viewTrips.setOrientation(Orientation.VERTICAL);
+        
+        bp.setCenter(sp);
+        sp.setContent(viewTrips);
+        sp.setVisible(false);
+        viewTrips.setVisible(false);
+        
+        select.setOnAction((ActionEvent event)->{
+            if(tripsBox.getSelectionModel().getSelectedItem() == null){
+                alert("Select a Trip in \"Trip Box\" Field.");
+            }
+            else{
+                viewTrips.getItems().clear();
+                String name = (String) tripsBox.getSelectionModel().getSelectedItem();
+            
+                Trip test = new Trip(name);
+                int position = userTrips.indexOf(test);
+                Trip trip = userTrips.get(position);
+                
+                ArrayList<PitStop> ps = trip.getSpots();
+                SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy");
+                Iterator it;
+                try{
+                    it = facade.shortestPath(actualUser.getCpf(), name);
+                    while(it.hasNext()){
+                        EntryDjikstra entry = (EntryDjikstra) it.next();
+                        viewTrips.getItems().add(((City)((Vertex) entry.getCur()).getVertex()).getName());
+                    }
+                } catch (NotFoundException ex) {
+                    //Will never enter here.
+                } catch (InexistentEntryException ex) {
+                    //Will never enter here.
+                } catch (DuplicateEntryException ex) {
+                    //Will never enter here.
+                } catch (InsufficientSpotsException ex) {
+                    alert("There too few spots to Make an Way.");
+                    primaryStage.setScene(userScene);
+                } catch (TheresNoEntryException ex) {
+                    //Will never enter here.
+                } catch (NoWaysException ex) {
+                    //Lel
+                }
+                viewTrips.setVisible(true);
+                sp.setVisible(true);
+            }
+        });
+        
+        Button back = new Button("Back");
+        back.setTextFill(Color.RED);
+        back.setOnAction((ActionEvent event)->{
+            primaryStage.setScene(userScene);
+        });
+        back.setTranslateX(275);
+        bp.setBottom(back); 
     }
     
     private void alert(String message){
