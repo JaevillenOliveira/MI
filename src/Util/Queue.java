@@ -1,6 +1,7 @@
 
 package Util;
 
+import java.io.Serializable;
 import java.util.Iterator;
 import java.util.LinkedList;
 
@@ -8,7 +9,7 @@ import java.util.LinkedList;
  *
  * @author AlmirNeto
  */
-public class Queue implements IQueue{
+public class Queue implements IQueue, Serializable{
     
     private Node head; 
     private Node tail; 

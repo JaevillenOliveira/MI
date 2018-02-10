@@ -1,7 +1,9 @@
 
 package Util;
 
-public interface IHash {
+import java.io.Serializable;
+
+public interface IHash extends Serializable{
     
     public void put(Object key, Object value);
     

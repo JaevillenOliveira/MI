@@ -5,11 +5,9 @@
  */
 package Util;
 
-import Exceptions.TheresNoEntryException;
+import Exceptions.*;
 import Model.Entry;
-import Exceptions.DuplicateEntryException;
-import Exceptions.EmptyHashException;
-import Exceptions.InexistentEntryException;
+import java.io.Serializable;
 import java.util.Iterator;
 import java.util.LinkedList;
 
@@ -17,7 +15,7 @@ import java.util.LinkedList;
  *
  * @author AlmirNeto
  */
-public class HashMap{
+public class HashMap implements Serializable{
     
     private int size;
     private Entry[] map;

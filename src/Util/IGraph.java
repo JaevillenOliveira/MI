@@ -5,7 +5,7 @@ import Model.Edge;
 import Exceptions.*;
 import java.util.Iterator;
 
-public interface IGraph {
+public interface IGraph{
     
     public void addVertex(Object key)throws DuplicateEntryException;
     public Iterator vertex();
