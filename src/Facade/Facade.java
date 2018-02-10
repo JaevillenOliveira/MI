@@ -8,7 +8,6 @@ package Facade;
 import Controller.Controller;
 import Exceptions.*;
 import Model.*;
-import Exceptions.*;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -41,7 +40,11 @@ public class Facade {
         return controller.addCity(cityName, latitude, longitude, code, population);
     }
     
-    public void addEatPoint(int code, String name, String adress, int rate) throws InexistentEntryException{
+    public Intersection addIntersection(TypeIntersection type, double latitude, double longitude, int code) throws DuplicateEntryException{
+        return controller.addIntersection(type, latitude, longitude, code);
+    }
+    
+    public void addEatPoint(int code, String name, String adress, Rate rate) throws InexistentEntryException{
         controller.addEatPoint(code, name, adress, rate);
     }
     
@@ -77,7 +80,15 @@ public class Facade {
     }
     
     public boolean haveCities(){
-        return controller.haveCities();
+        return controller.hasCities();
+    }
+    
+    public boolean hasInter(){
+        return controller.hasInter();
+    }
+    
+    public LinkedList getInter() throws TheresNoInterException{
+        return controller.getInter();
     }
     
     public LinkedList getUserTrips(User user){
@@ -105,6 +116,18 @@ public class Facade {
     }
     
     public void readRoads(String directory) throws IOException, FileNotFoundException{
-    controller.readRoads(directory);
+        controller.readRoads(directory);
+    }
+    
+    public boolean hasFile(){
+        return controller.hasFile();
+    }
+    
+    public void loadDataFile() throws IOException, FileNotFoundException, ClassNotFoundException{
+        controller.loadDataFile();
+    }
+    
+    public void saveDataFile() throws IOException{
+        controller.saveDataFile();
     }
 }
