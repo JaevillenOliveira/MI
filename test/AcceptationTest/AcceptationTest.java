@@ -11,8 +11,6 @@ import junit.framework.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import Model.*;
-import Exceptions.TheresNoEntryException;
-import java.io.FileNotFoundException;
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Calendar;
@@ -107,7 +105,7 @@ public class AcceptationTest {
     public void testAddEatPoint() throws DuplicateEntryException, InexistentEntryException{
         capela = controller.addCity("Capela", 22.2, 12.1, 300, 1);
         
-        controller.addEatPoint(300, "Módulo 8", "Próximo a UEFS", 2);
+        controller.addEatPoint(300, "Módulo 8", "Próximo a UEFS", Rate.BOM);
     
     }
     
@@ -115,7 +113,7 @@ public class AcceptationTest {
     public void testIfTheEatPointIsRegistered() throws InexistentEntryException, DuplicateEntryException{
         capela = controller.addCity("Capela", 22.2, 12.1, 300, 1);
         
-        controller.addEatPoint(300, "Módulo 8", "Próximo a UEFS", 2);
+        controller.addEatPoint(300, "Módulo 8", "Próximo a UEFS", Rate.BOM);
         
         EatPoint ep = capela.getPlaceEat().get(0);
         
@@ -125,7 +123,7 @@ public class AcceptationTest {
     @Test (expected = InexistentEntryException.class)
     public void testRegisterAnEatPointIntoACityThatDoesntExist() throws InexistentEntryException{
         
-        controller.addEatPoint(300, "Módulo 8", "Próximo a UEFS", 2);
+        controller.addEatPoint(300, "Módulo 8", "Próximo a UEFS", Rate.BOM);
     }
     
     @Test
@@ -219,52 +217,9 @@ public class AcceptationTest {
         Assert.assertEquals(capela, city);
     }
     
-    @Test (expected = NoWaysException.class)
-    public void testShortestPathWithCityIsolated() throws FileNotFoundException, DuplicateEntryException, InexistentEntryException, AlreadyHasAdjacency, InexistentVertexException, LoopIsNotAllowedException, DuplicatedDataException, NoSuchAlgorithmException, UnsupportedEncodingException, NotFoundException, InsufficientSpotsException, TheresNoEntryException, NoWaysException{
-        controller.readCities("C:\\Users\\Jaevillen\\Desktop\\Ecomp\\PBL\\Problema 4\\Cidades.txt");
-        
-        gaviao = controller.searchCity(2911253);
-        capela = controller.searchCity(2906857);
-        capimGrosso = controller.searchCity(2906873);
-        itatiaia = controller.searchCity(2917508);
-        novaFatima = controller.searchCity(2922730);
-        
-        controller.addRoad(novaFatima, capela, 20.0);
-        controller.addRoad(gaviao, novaFatima, 30.0);
-        controller.addRoad(gaviao, capela, 50.5);
-        controller.addRoad(capimGrosso, gaviao, 34.2);
-        
-        controller.newUser("Almir Neto", "123456", "123456789", "teste@gmail.com");
-        
-        controller.startTrip("123456789", "Rolê pra Cabuçu", date);
-        
-        Calendar data = Calendar.getInstance();
-        
-        City city = controller.insertCityInTrip("123456789", "Rolê pra Cabuçu",data , data, 2911253);       
-        Assert.assertEquals(gaviao, city);
-        city = controller.insertCityInTrip("123456789", "Rolê pra Cabuçu",data , data, 2906857);
-        Assert.assertEquals(capela, city);
-        city = controller.insertCityInTrip("123456789", "Rolê pra Cabuçu",data , data, 2917508);
-
-        
-        Iterator it = controller.shortestPath("123456789", "Rolê pra Cabuçu");
-        
-        EntryDjikstra obj = (EntryDjikstra) it.next();
-        Assert.assertEquals("GAVIÃO", ((City)((Vertex) obj.getCur()).getVertex()).getName());
-     
-        obj = (EntryDjikstra) it.next();
-        Assert.assertEquals("NOVA FÁTIMA",((City)((Vertex) obj.getCur()).getVertex()).getName());
-      
-        obj = (EntryDjikstra) it.next();
-        Assert.assertEquals("CAPELA", ((City)((Vertex) obj.getCur()).getVertex()).getName());
-        Assert.assertEquals(50.0,obj.getDistance());
- 
-        
-    }
-            
-    
+  
     @Test
-    public void testShortestPath() throws DuplicateEntryException, DuplicatedDataException, NoSuchAlgorithmException, UnsupportedEncodingException, NotFoundException, AlreadyHasAdjacency, InexistentVertexException, LoopIsNotAllowedException, InexistentEntryException, InsufficientSpotsException, TheresNoEntryException, NoWaysException{
+    public void shortestPath() throws DuplicateEntryException, DuplicatedDataException, NoSuchAlgorithmException, UnsupportedEncodingException, NotFoundException, AlreadyHasAdjacency, InexistentVertexException, LoopIsNotAllowedException, InexistentEntryException, InsufficientSpotsException, TheresNoEntryException, NoWaysException{
         
         capela = controller.addCity("Capela", 22.2, 12.1, 300, 1);
         novaFatima = controller.addCity("Nova Fátima", 22.2, 12.1, 301, 1);
@@ -331,33 +286,4 @@ public class AcceptationTest {
         Assert.assertEquals("ITATIAIA", ((City)((Vertex) obj.getCur()).getVertex()).getName());
         Assert.assertEquals(400.4,obj.getDistance());
     }
-    
-    @Test
-    public void testReadCities() throws FileNotFoundException, DuplicateEntryException, InexistentEntryException{
-        controller.readCities("C:\\Users\\Jaevillen\\Desktop\\Ecomp\\PBL\\Problema 4\\Cidades.txt");
-        
-        Assert.assertEquals("CAPELA DO ALTO ALEGRE", controller.searchCity(2906857).getName());
-        Assert.assertEquals("NOVA FATIMA", controller.searchCity(2922730).getName());
-        Assert.assertEquals("RIACHÃO DO JACUÍPE", controller.searchCity(2926301).getName());
-        Assert.assertEquals("CAPIM GROSSO", controller.searchCity(2906873).getName());
-        Assert.assertEquals("SÃO JOSÉ DO JACUÍPE", controller.searchCity(2929370).getName());
-        Assert.assertEquals("GAVIÃO", controller.searchCity(2911253).getName());
-        Assert.assertEquals("PÉ DE SERRA", controller.searchCity(2924058).getName());
-        Assert.assertEquals("VALENTE", controller.searchCity(2933000).getName());
-        Assert.assertEquals("SERRINHA", controller.searchCity(2930501).getName());
-        Assert.assertEquals("FEIRA DE SANTANA", controller.searchCity(2910800).getName());
-        Assert.assertEquals("ALAGOINHAS", controller.searchCity(2900702).getName());
-        Assert.assertEquals("CAMAÇARI", controller.searchCity(2905701).getName());
-        Assert.assertEquals("SALVADOR", controller.searchCity(2927408).getName());
-        Assert.assertEquals("JEQUIÉ", controller.searchCity(2918001).getName());
-        Assert.assertEquals("JACOBINA", controller.searchCity(2917508).getName());  
-    }
-    
-    @Test
-    public void testReadEdges() throws DuplicateEntryException, FileNotFoundException, InexistentEntryException, AlreadyHasAdjacency, InexistentVertexException, LoopIsNotAllowedException{
-        controller.readCities("C:\\Users\\Jaevillen\\Desktop\\Ecomp\\PBL\\Problema 4\\Cidades.txt");
-        
-        controller.readEdges("C:\\Users\\Jaevillen\\Desktop\\Ecomp\\PBL\\Problema 4\\Estradas.txt");
-    }
-
 }
