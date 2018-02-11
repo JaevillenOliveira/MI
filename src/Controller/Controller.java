@@ -1,14 +1,18 @@
 
 package Controller;
 
-import Exceptions.TheresNoEntryException;
-import Exceptions.TheresNoCityException;
-import Exceptions.DontHaveTripsException;
 import Exceptions.*;
 import Model.*;
 import Util.*;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -17,11 +21,8 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.List;
-import java.util.Scanner;
 import java.util.Stack;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.StringTokenizer;
 
 /**
  *
@@ -29,8 +30,8 @@ import java.util.logging.Logger;
  */
 public class Controller {
    
-    private final Tree users; //HashSet with the logins of the Users.
-    private final Graph cities; //HashSet with the cities points.
+    private Tree users; //HashSet with the logins of the Users.
+    private Graph graph; //HashSet with the cities points.
 
     /**
      * Constructor of the class
@@ -38,7 +39,7 @@ public class Controller {
     public Controller() throws NoSuchAlgorithmException, UnsupportedEncodingException, DuplicatedDataException{
         
         users = new Tree();
-        cities = new Graph();
+        graph = new Graph();
         addAdmin();
     }
 
@@ -143,7 +144,7 @@ public class Controller {
     public City addCity(String cityName, double latitude, double longitude, int code, double population) throws DuplicateEntryException{
         
         City city = new City(cityName.toUpperCase(), latitude, longitude, code);
-        cities.addVertex(city); 
+        graph.addVertex(city); 
         
         return city;
     }
@@ -161,7 +162,7 @@ public class Controller {
     public Intersection addIntersection (TypeIntersection type, double latitude, double longitude, int code) throws DuplicateEntryException{
         Intersection intersection = new Intersection(type, latitude, longitude, code);
         
-        cities.addVertex(intersection);
+        graph.addVertex(intersection);
         
         return intersection;
     }
@@ -170,31 +171,17 @@ public class Controller {
      * Method that Add a Point to Eat in a City.
      * @param code The Code of the city that the EatPoint is located.
      * @param name The Name of the Place.
-     * @param adress The Adress of the Place.
+     * @param adress The Address of the Place.
      * @param rate The Rate of the Place.
      * @throws InexistentEntryException If the City with this code doesn't exist.
      */
-    public void addEatPoint(int code, String name, String adress, int rate) throws InexistentEntryException{
+    public void addEatPoint(int code, String name, String adress, Rate rate) throws InexistentEntryException{
         EatPoint eat = new EatPoint(name, adress);
-        
-        if(rate == 1){
-            eat.setRate(Rate.PÉSSIMO);
-        }
-        else if(rate == 2){
-            eat.setRate(Rate.RUIM);
-        }
-        else if(rate == 3){
-            eat.setRate(Rate.REGULAR);
-        }
-        else if(rate == 4){
-            eat.setRate(Rate.BOM);
-        }
-        else if(rate == 5){
-            eat.setRate(Rate.ÓTIMO);
-        }
+        eat.setRate(rate);
+
         City search = new City(code);
 
-        City addEat = (City)cities.getKey(search);
+        City addEat = (City)graph.getKey(search);
         
         if(addEat.getPlaceEat() == null){
             addEat.setPlaceEat(new ArrayList());
@@ -210,7 +197,7 @@ public class Controller {
      * 
      * @param cityA The First City.
      * @param cityB The Second City.
-     * @param km The lenght of the Road.
+     * @param km The length of the Road.
      * @throws DuplicateEntryException If there's already a Road between these Cities.
      * @throws AlreadyHasAdjacency If there's already a Road between these Cities.
      * @throws InexistentVertexException If one of the Cities doesn't exist.
@@ -218,7 +205,7 @@ public class Controller {
      * @throws Exceptions.InexistentEntryException
      */
     public void addRoad(City cityA, City cityB, double km) throws AlreadyHasAdjacency, InexistentVertexException, LoopIsNotAllowedException, InexistentEntryException, DuplicateEntryException{
-        cities.addEdge(cityA, cityB, km);
+        graph.addEdge(cityA, cityB, km);
     }
     
      /**
@@ -226,29 +213,29 @@ public class Controller {
      * 
      * @param inter The Intersection.
      * @param city The City.
-     * @param km The lenght of the Road.
+     * @param km The length of the Road.
      * @throws DuplicateEntryException If there's already a Road between these Points.
      * @throws AlreadyHasAdjacency If there's already a Road between these Points.
      * @throws InexistentVertexException If one of the Points doesn't exist.
      * @throws LoopIsNotAllowedException If the Codes are headed for the same Point.
      */
     public void addRoad (Intersection inter,City city, double km) throws DuplicateEntryException, AlreadyHasAdjacency, InexistentVertexException, LoopIsNotAllowedException{
-        cities.addEdge(inter,city, km);
+        graph.addEdge(inter,city, km);
     }
     
       /**
      * Method that adds a Road between a two Intersections.
      * 
-     * @param interA The firs Intersection.
+     * @param interA The first Intersection.
      * @param interB The second Intersection.
-     * @param km The lenght of the Road.
+     * @param km The length of the Road.
      * @throws DuplicateEntryException If there's already a Road between these Points.
      * @throws AlreadyHasAdjacency If there's already a Road between these Points.
      * @throws InexistentVertexException If one of the Points doesn't exist.
      * @throws LoopIsNotAllowedException If the Codes are headed for the same Point.
      */
     public void addRoad (Intersection interA, Intersection interB, double km) throws DuplicateEntryException, AlreadyHasAdjacency, InexistentVertexException, LoopIsNotAllowedException{
-        cities.addEdge(interA, interB, km);
+        graph.addEdge(interA, interB, km);
     }
     
     /**
@@ -290,7 +277,7 @@ public class Controller {
     public City searchCity(int code) throws InexistentEntryException{
         City city = new City(code);
         
-        City realCity = (City) cities.getKey(city);
+        City realCity = (City) graph.getKey(city);
         
         return realCity;
     }
@@ -305,7 +292,7 @@ public class Controller {
     public Intersection searchIntersection(int code) throws InexistentEntryException{
         Intersection inter = new Intersection(code);
         
-        Intersection realInter = (Intersection) cities.getKey(inter);
+        Intersection realInter = (Intersection) graph.getKey(inter);
         
         return realInter;
     }
@@ -380,27 +367,75 @@ public class Controller {
         
         City start = null; 
         City end = null;
+        EntryDjikstra anali = null, temp = null;
         
         ArrayList <EntryDjikstra> finalPath = new ArrayList();
         while(it.hasNext()){
             end = (City) ((PitStop) it.next()).getCity();
             if(start != null){
-                Stack itStack = cities.path(start, end, cities.shortestPath(start));
+                Stack itStack = graph.path(start, end, graph.shortestPath(start));
                 while(!itStack.empty()){
-                    finalPath.add((EntryDjikstra) itStack.pop());  
+                    temp = (EntryDjikstra) itStack.pop();
+                    if(anali == null || !anali.getCur().equals(temp.getCur())){
+                        finalPath.add(temp); 
+                    } 
+                    
                 } 
+                anali = temp;
             }
             start = end;  
         }
         return finalPath.iterator();
     } 
-    
+    /**
+     * Method that add an Admin to System.
+     * @throws NoSuchAlgorithmException
+     * @throws UnsupportedEncodingException
+     * @throws DuplicatedDataException 
+     */
     private void addAdmin() throws NoSuchAlgorithmException, UnsupportedEncodingException, DuplicatedDataException{
         
         String pw = hashPassword("pbl4");
         User admin = new User("admin", pw);
+        admin.setName("Admin");
         
         users.inserir(admin);
+    }
+    /**
+     * Method that verifies if There are Intersections in System.
+     * @return TRUE if There's any Inter in System.
+     */
+    public boolean hasInter(){
+        LinkedList<Vertex> inter;
+        try{
+            inter = graph.getAllVertex();
+        } catch (ThereNoKeysException ex) {
+            return false;
+        }
+        for(Vertex vertex : inter){
+            if(vertex.getVertex() instanceof Intersection){
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    public LinkedList getInter() throws TheresNoInterException{
+        LinkedList<Vertex> inter;
+        try{
+            inter = graph.getAllVertex();
+        } catch (ThereNoKeysException ex) {
+            throw new TheresNoInterException();
+        }
+       
+        LinkedList casted = new LinkedList();
+        
+        for(Vertex vertex : inter){
+            if(vertex.getVertex() instanceof Intersection){
+                casted.add(vertex.getVertex());
+            }
+        }
+        return casted;
     }
     /**
      * Method that returns all Cities of the System.
@@ -411,7 +446,7 @@ public class Controller {
         
         LinkedList<Vertex> city;
         try{
-            city = cities.getAllVertex();
+            city = graph.getAllVertex();
         } catch (ThereNoKeysException ex) {
             throw new TheresNoCityException();
         }
@@ -419,7 +454,9 @@ public class Controller {
         LinkedList casted = new LinkedList();
         
         for(Vertex vertex : city){
-            casted.add(vertex.getVertex());
+            if(vertex.getVertex() instanceof City){
+                casted.add(vertex.getVertex());
+            }
         }
         return casted;
     }
@@ -427,13 +464,19 @@ public class Controller {
      * Method that verifies if there are Cities in System.
      * @return TRUE If there are City in System.
      */
-    public boolean haveCities(){
+    public boolean hasCities(){
+        LinkedList<Vertex> city;
         try{
-            cities.getAllVertex();
-            return true;
+            city = graph.getAllVertex();
         } catch (ThereNoKeysException ex) {
             return false;
         }
+        for(Vertex vertex : city){
+            if(vertex.getVertex() instanceof City){
+                return true;
+            }
+        }
+        return false;
     }
     /**
      * Method that returns the Trips from an User.
@@ -477,63 +520,206 @@ public class Controller {
         
         spots.remove(remove);
     }
-    
-    public void readEdges(String directory) throws FileNotFoundException, InexistentEntryException, AlreadyHasAdjacency, InexistentVertexException, LoopIsNotAllowedException, DuplicateEntryException{
-        File arq = new File(directory);
-        Scanner scan = new Scanner(arq);
+    /**
+     * Method that change an User's password if s/he wants.
+     * @param user The User that wants to change the password.
+     * @param oldPw The Old Password to verify if it's the Owner of the account.
+     * @param newPw The New Password of the User's Account.
+     * @return TRUE If the password was changed.
+     * @throws NoSuchAlgorithmException
+     * @throws UnsupportedEncodingException 
+     */
+    public boolean changeUserPassword(User user, String oldPw, String newPw) throws NoSuchAlgorithmException, UnsupportedEncodingException{
+        String oldPw_hash = this.hashPassword(oldPw);
         
-        while(scan.hasNext()){
-            int codeA = scan.nextInt();
-            int codeB = scan.nextInt();
-            double km = Double.parseDouble(scan.next());
-           
-            City cityA = null, cityB = null;
-            Intersection interA = null, interB = null;
-            try{
-                cityA = this.searchCity(codeA);
-            }catch(InexistentEntryException ex){
-                interA = this.searchIntersection(codeA);
-            }
+        if(!user.getPassword().equals(oldPw_hash)){
+            return false;
+        }
+        else{
+            String newPw_hash = this.hashPassword(newPw);
+            user.setPassword(newPw_hash);
+            return true;
+        }
+    }
+    /**
+     * Method that removes an User from the System, if it Wants.
+     * @param user 
+     */
+    public void removeUser(User user){
+        try{
+            users.remover(user);
+        } catch (NotFoundException ex) {
+            //Will never enter here.
+        }
+    }
+    /**
+     * Method that Read a File containing Cities and Intersection and Up them to System.
+     * @param directory The Directory of the File.
+     * @throws FileNotFoundException If the File doesn't exist.
+     * @throws IOException 
+     */
+    public void readCityAndInter(String directory) throws FileNotFoundException, IOException{
+        File arq = new File(directory);
+        
+        FileReader file = new FileReader(arq);
+        BufferedReader br = new BufferedReader(file);
+        
+        String line = br.readLine(); 
+        
+        while(line != null){
             
-           try{
-                cityB = this.searchCity(codeB);
-            }catch(InexistentEntryException ex){
-                interB = this.searchIntersection(codeB);
+            StringTokenizer token = new StringTokenizer(line);
+            int colls = token.countTokens();
+            if(colls == 4){
+                String type = token.nextToken();
+                String code = token.nextToken();
+                String lat = token.nextToken();
+                String longi = token.nextToken();
+                
+                int intCode = Integer.parseInt(code);
+                double latDouble = Double.parseDouble(lat);
+                double longiDouble = Double.parseDouble(longi);
+
+                if(type.equals("R")){
+                    Intersection inter;
+                    
+                    try{
+                        inter = this.addIntersection(TypeIntersection.ROTULA, latDouble, longiDouble, intCode);
+                    } catch (DuplicateEntryException ex) {
+                        //If there's already an Intersection with this Code, it'll not add other Inter.
+                    }
+                }
+                else if(type.equals("C")){
+                    Intersection inter;
+                    
+                    try{
+                        inter = this.addIntersection(TypeIntersection.CROSSING, latDouble, longiDouble, intCode);
+                    } catch (DuplicateEntryException ex) {
+                        //If there's already an Intersection with this Code, it'll not add other Inter.
+                    }
+                }
+                else if(type.equals("S")){
+                    Intersection inter;
+                    
+                    try{
+                        inter = this.addIntersection(TypeIntersection.SEMAPHORE, latDouble, longiDouble, intCode);
+                    } catch (DuplicateEntryException ex) {
+                        //If there's already an Intersection with this Code, it'll not add other Inter.
+                    }
+                }
+                line = br.readLine();
             }
-           
-            if (cityA != null && cityB != null){
-                this.addRoad(cityA, cityB, km);
-            }
-            else if(interA != null && interB != null){
-                this.addRoad(interA, interB, km);
-            }
-            else if(cityA != null && interB != null) {
-                this.addRoad(interB, cityA, km);
-            }
-            else{
-                this.addRoad(interA, cityB, km);
+            else if(colls > 4){
+                String cityName = "";
+                int name = colls - 4;
+                for(int i = 0; i < name; i++){
+                    if(i == 0){
+                        cityName = token.nextToken();
+                    }
+                    else{
+                        cityName = cityName + " " + token.nextToken();
+                    }
+                }
+                String code = token.nextToken();
+                String lat = token.nextToken();
+                String longi = token.nextToken();
+                String pop = token.nextToken();
+                
+                int intCode = Integer.parseInt(code);
+                double latDouble = Double.parseDouble(lat);
+                double longiDouble = Double.parseDouble(longi);
+                double popDouble = Double.parseDouble(pop);
+                City city;
+                try{
+                    city = this.addCity(cityName, latDouble, longiDouble, intCode, popDouble);
+                } catch (DuplicateEntryException ex) {
+                    //If there's already a City with this Code, it'll not add other City.
+                }
+                line = br.readLine();
             }
         }
-        scan.close();
         
+    }
+    /**
+     * Method that Read a File containing Roads and Up them to System.
+     * @param directory The Directory of the File.
+     * @throws FileNotFoundException If the File doesn't exist.
+     * @throws IOException 
+     */
+    public void readRoads(String directory) throws FileNotFoundException, IOException{
+        
+        File arq = new File(directory);
+        
+        FileReader file = new FileReader(arq);
+        BufferedReader br = new BufferedReader(file);
+        
+        String line = br.readLine();
+        
+        while(line != null){
+            StringTokenizer token = new StringTokenizer(line);
+            String start = token.nextToken();
+            String end = token.nextToken();
+            String weight = token.nextToken();
+            
+            int startCode = Integer.parseInt(start);
+            int endCode = Integer.parseInt(end);
+            double weightDouble = Double.parseDouble(weight);
+            City cityA = null;
+            City cityB = null;
+            try{
+                cityA = this.searchCity(startCode);
+                cityB = this.searchCity(endCode);
+                this.addRoad(cityA, cityB, weightDouble);
+            }
+             catch (InexistentEntryException ex) {
+                //If any of both Cities doesn't exist, it'll not add a Road to System.
+            } catch (AlreadyHasAdjacency ex) {
+                //If there's already a Road between these cities.
+            } catch (InexistentVertexException ex) {
+                //If one of the cities doesn't exist.
+            } catch (LoopIsNotAllowedException ex) {
+                //If both cities are equal.
+            } catch (DuplicateEntryException ex) {
+            }
+            line = br.readLine();
+        }
     }
     
-    public void readCities(String directory) throws FileNotFoundException, DuplicateEntryException{
-        File arq = new File(directory);
-        Scanner scan = new Scanner(arq);
-        
-        scan.useDelimiter("\u0009");
-
-        while(scan.hasNext()){
-            String nome = scan.next();
-            int code = scan.nextInt();
-            double latitude = Double.parseDouble(scan.next());
-            double longitude = Double.parseDouble(scan.next());
-
-            this.addCity(nome.substring(nome.indexOf("\n") + 1), latitude, longitude, code, 0);
-        }
-        
-        
+    private void createNewFile() throws IOException{
+        File file = new File("src/Data.data");
+        file.createNewFile();
     }
+    
+    public void loadDataFile() throws FileNotFoundException, IOException, ClassNotFoundException{
+        File file;
         
+        file = new File("src/Data.data");
+        if(file.exists()){
+            ObjectInputStream in;
+            in = new ObjectInputStream(new FileInputStream(file));
+            users = (Tree)in.readObject();
+            graph = (Graph)in.readObject();   
+        }
+    }
+    
+    public boolean hasFile(){
+         File file;
+        
+        file = new File("MI-Programming-master.data");
+        return file.exists();
+    }
+    
+    public void saveDataFile() throws IOException, FileNotFoundException{
+        File file = new File("src/Data.data");
+        
+        if(!hasFile()){
+            createNewFile();
+        }
+        ObjectOutputStream out;
+        out = new ObjectOutputStream(new FileOutputStream(file));
+        
+        out.writeObject(users);
+        out.writeObject(graph);
+        out.close();
+    }
 }
