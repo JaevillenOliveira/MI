@@ -1,18 +1,17 @@
 
 package Util;
 
-import Exceptions.ThereNoKeysException;
 import Model.Entry;
 import Exceptions.*;
+import java.io.Serializable;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.List;
 
 /**
  *
  * @author almir
  */
-public class HashSet{
+public class HashSet implements Serializable{
     
     private int size;
     private Entry[] keys;

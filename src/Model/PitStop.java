@@ -5,13 +5,14 @@
  */
 package Model;
 
+import java.io.Serializable;
 import java.util.Calendar;
 
 /**
  *
  * @author Jaevillen
  */
-public class PitStop{
+public class PitStop implements Serializable{
     private City city;
     private Calendar timeIn;
     private Calendar timeOut;

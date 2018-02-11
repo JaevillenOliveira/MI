@@ -5,17 +5,19 @@
  */
 package Model;
 
+import java.io.Serializable;
+
 /**
  *
  * @author Jaevillen
  */
-public class Intersection extends Spot{
+public class Intersection extends Spot implements Serializable{
     
     private TypeIntersection type;
 
     
     /**
-     * Contructor of the class.
+     * Constructor of the class.
      * @param type The type of the Intersection.
      * @param latitude The Latitude of the Intersection.
      * @param longitude The Longitude of the Intersection.
@@ -24,6 +26,10 @@ public class Intersection extends Spot{
     public Intersection(TypeIntersection type, double latitude, double longitude, int code) {
         super(latitude, longitude, code);
         this.type = type;
+    }
+    
+    public Intersection(double latitude, double longitude, int code){
+        super(latitude, longitude, code);
     }
     
     public Intersection(int code){
@@ -59,6 +65,11 @@ public class Intersection extends Spot{
         }
         
         return false;
+    }
+    
+    @Override
+    public String toString(){
+        return this.type.name() + "-"+this.getCode();
     }
     
     

@@ -1,11 +1,13 @@
 
 package Model;
 
+import java.io.Serializable;
+
 /**
  *
  * @author Jaevillen and Almir
  */
-public class Spot {
+public class Spot implements Serializable{
     
     private double latitude;
     private double longitude;

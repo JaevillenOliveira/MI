@@ -1,6 +1,7 @@
 
 package Model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
 
@@ -8,7 +9,7 @@ import java.util.Calendar;
  *
  * @author Jaevillen and Almir
  */
-public class Trip{
+public class Trip implements Serializable{
     
     private ArrayList<PitStop> spots;
     private Calendar initialDate;

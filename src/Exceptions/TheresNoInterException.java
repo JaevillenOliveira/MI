@@ -3,16 +3,16 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package Model;
-
-import java.io.Serializable;
+package Exceptions;
 
 /**
  *
- * @author Jaevillen
+ * @author almir
  */
-public enum TypeIntersection implements Serializable{
-    ROTULA, 
-    CROSSING,
-    SEMAPHORE;
+public class TheresNoInterException extends Exception {
+
+    public TheresNoInterException() {
+        super();
+    }
+    
 }

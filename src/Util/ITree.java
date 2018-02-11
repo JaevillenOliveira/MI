@@ -1,8 +1,9 @@
 package Util;
 
 import Exceptions.*;
+import java.io.Serializable;
 
-public interface ITree extends Iterable{
+public interface ITree extends Iterable, Serializable{
     
     public Object buscar(Comparable item) throws NotFoundException;
 

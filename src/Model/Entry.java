@@ -1,7 +1,9 @@
 
 package Model;
 
-public class Entry {
+import java.io.Serializable;
+
+public class Entry implements Serializable{
     
     private Object key;
     private Object value;
@@ -42,13 +44,7 @@ public class Entry {
     @Override
     public boolean equals(Object obj){    
         Entry comp = (Entry)obj;
-        if(key != null && comp.getKey() != null){
-            return key.equals(comp.getKey());
-        }
-        if(key == null && comp.getKey() == null){
-            return true;
-        }
-        return false;
+        return key.equals(comp.getKey());
     }
     
      /**

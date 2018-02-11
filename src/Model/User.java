@@ -2,12 +2,13 @@
 package Model;
 
 import Util.Queue;
+import java.io.Serializable;
 
 /**
  *
  * @author Jaevillen
  */
-public class User implements Comparable{
+public class User implements Comparable, Serializable{
     
     private String password;;
     private String cpf;

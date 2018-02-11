@@ -1,11 +1,13 @@
 
 package Model;
 
+import java.io.Serializable;
+
 /**
  *
  * @author AlmirNeto
  */
-public class EatPoint {
+public class EatPoint implements Serializable{
     
     private String name;
     private String adress;

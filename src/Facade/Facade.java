@@ -8,7 +8,8 @@ package Facade;
 import Controller.Controller;
 import Exceptions.*;
 import Model.*;
-import Exceptions.TheresNoEntryException;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Calendar;
@@ -39,7 +40,11 @@ public class Facade {
         return controller.addCity(cityName, latitude, longitude, code, population);
     }
     
-    public void addEatPoint(int code, String name, String adress, int rate) throws InexistentEntryException{
+    public Intersection addIntersection(TypeIntersection type, double latitude, double longitude, int code) throws DuplicateEntryException{
+        return controller.addIntersection(type, latitude, longitude, code);
+    }
+    
+    public void addEatPoint(int code, String name, String adress, Rate rate) throws InexistentEntryException{
         controller.addEatPoint(code, name, adress, rate);
     }
     
@@ -66,7 +71,7 @@ public class Facade {
         return controller.insertCityInTrip(cpf, tripName, in, out, code);
     }
     
-    public Iterator shortestPath(String cpf, String tripName) throws NotFoundException, InexistentEntryException, DuplicateEntryException, InsufficientSpotsException, TheresNoEntryException{
+    public Iterator shortestPath(String cpf, String tripName) throws NotFoundException, InexistentEntryException, DuplicateEntryException, InsufficientSpotsException, TheresNoEntryException, NoWaysException{
         return controller.shortestPath(cpf, tripName);
     }
     
@@ -75,7 +80,15 @@ public class Facade {
     }
     
     public boolean haveCities(){
-        return controller.haveCities();
+        return controller.hasCities();
+    }
+    
+    public boolean hasInter(){
+        return controller.hasInter();
+    }
+    
+    public LinkedList getInter() throws TheresNoInterException{
+        return controller.getInter();
     }
     
     public LinkedList getUserTrips(User user){
@@ -90,4 +103,31 @@ public class Facade {
         controller.removeCityFromTrip(trip, code);
     }
     
+    public boolean changeUserPassword(User user, String oldPw, String newPw) throws NoSuchAlgorithmException, UnsupportedEncodingException{
+        return controller.changeUserPassword(user, oldPw, newPw);
+    }
+    
+    public void removeUser(User user){
+        controller.removeUser(user);
+    }
+    
+    public void readFirstFile(String directory) throws IOException, FileNotFoundException{
+        controller.readCityAndInter(directory);
+    }
+    
+    public void readRoads(String directory) throws IOException, FileNotFoundException{
+        controller.readRoads(directory);
+    }
+    
+    public boolean hasFile(){
+        return controller.hasFile();
+    }
+    
+    public void loadDataFile() throws IOException, FileNotFoundException, ClassNotFoundException{
+        controller.loadDataFile();
+    }
+    
+    public void saveDataFile() throws IOException{
+        controller.saveDataFile();
+    }
 }
