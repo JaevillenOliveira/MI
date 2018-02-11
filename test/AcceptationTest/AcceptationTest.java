@@ -300,4 +300,5 @@ public class AcceptationTest {
         
         Assert.assertEquals("23", t.getCpf());
     }
+
 }

@@ -701,15 +701,15 @@ public class Controller {
             graph = (Graph)in.readObject();   
         }
     }
-    
     public boolean hasFile(){
          File file;
         
-        file = new File("MI-Programming-master.data");
+        file = new File("src/Data.data");
         return file.exists();
     }
     
     public void saveDataFile() throws IOException, FileNotFoundException{
+
         File file = new File("src/Data.data");
         
         if(!hasFile()){
