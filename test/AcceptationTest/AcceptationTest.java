@@ -119,7 +119,7 @@ public class AcceptationTest {
         
         EatPoint ep = capela.getPlaceEat().get(0);
         
-        Assert.assertEquals("Módulo 8", ep.getName());
+        Assert.assertEquals("MÓDULO 8", ep.getName());
     }
     
     @Test (expected = InexistentEntryException.class)
@@ -281,24 +281,6 @@ public class AcceptationTest {
         obj = (EntryDjikstra) it.next();
         Assert.assertEquals("ITATIAIA", ((City)((Vertex) obj.getCur()).getVertex()).getName());
         Assert.assertEquals(400.4,obj.getDistance());
-    }
-    
-    @Test
-    public void test() throws IOException, DuplicatedDataException, NoSuchAlgorithmException{
-        controller.readCityAndInter("C:\\Users\\Jaevillen\\Desktop\\Ecomp\\PBL\\Problema 4\\Cidades.txt");
-
-        controller.readRoads("C:\\Users\\Jaevillen\\Desktop\\Ecomp\\PBL\\Problema 4\\Estradas.txt");
-        
-        controller.newUser("Jaevillen", "23", "23", "teste");
-        controller.saveDataFile();
-    }
-    @Test
-    public void teste() throws IOException, FileNotFoundException, ClassNotFoundException, NotFoundException, NoSuchAlgorithmException{
-        controller.loadDataFile();
-        
-        User t = controller.doLogin("23", "23");
-        
-        Assert.assertEquals("23", t.getCpf());
     }
 
 }
