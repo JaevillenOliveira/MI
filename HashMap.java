@@ -42,7 +42,7 @@ public class HashMap implements Serializable{
         int hashCode = Math.abs(key.hashCode() % map.length);
         int pos = this.searchPosition(hashCode, entry);
         
-        if(hasEntry(pos)){
+         if(hasEntry(pos) && !map[pos].equals(EMPTY)){
            throw new DuplicateEntryException();
         }
         map[pos] = entry;
@@ -110,6 +110,9 @@ public class HashMap implements Serializable{
         if(!hasEntry(hashCode)){
             throw new InexistentEntryException();
         }
+        else if(map[hashCode].equals(EMPTY)){
+                
+            }
         else if(map[hashCode].getKey().equals(key)){
             map[hashCode] = EMPTY;
             size--;
@@ -124,7 +127,10 @@ public class HashMap implements Serializable{
      */
     private void searchAndRemove(int hashCode, Object key){
         for(int i = hashCode; map[i] != null; i = (i + 1) % map.length){
-            if(map[i].getKey().equals(key)){
+            if(map[i].equals(EMPTY)){
+                
+            }
+            else if(map[i].getKey().equals(key)){
                 map[i] = EMPTY;
                 size--;
             }
@@ -142,7 +148,7 @@ public class HashMap implements Serializable{
             if(map[i] == null){
                 throw new InexistentEntryException();
             }
-            if(map[i].getKey().equals(EMPTY)){
+            if(map[i].equals(EMPTY)){
             }
             else if(map[i].getKey().equals(key)){
                 return true;
@@ -162,7 +168,7 @@ public class HashMap implements Serializable{
             if(map[i] == null){
                 throw new InexistentEntryException();
             }
-            else if(map[i].getKey().equals(EMPTY)){
+            else if(map[i].equals(EMPTY)){
             }
             else if(map[i].getKey().equals(key)){
                 Object ret = map[i];
