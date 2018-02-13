@@ -34,7 +34,6 @@ public class Controller {
    
     private Tree users; //HashSet with the logins of the Users.
     private Graph graph; //HashSet with the cities points.
-    private Map map;
 
     /**
      * Constructor of the class
@@ -43,7 +42,6 @@ public class Controller {
         
         users = new Tree();
         graph = new Graph();
-        map = new Map(this);
         addAdmin();
     }
 
@@ -713,7 +711,6 @@ public class Controller {
             in = new ObjectInputStream(new FileInputStream(file));
             users = (Tree)in.readObject();
             graph = (Graph)in.readObject();   
-            map = (Map)in.readObject();
             in.close();
         }
     }
@@ -744,7 +741,6 @@ public class Controller {
         
         out.writeObject(users);
         out.writeObject(graph);
-        out.writeObject(map);
         out.close();
     }
     /**
@@ -793,10 +789,6 @@ public class Controller {
             return null;
         }
         return null;
-    }
-    
-    public Map getMap(){
-        return map;
     }
     
     public LinkedList getRoads() throws ThereNoKeysException{
