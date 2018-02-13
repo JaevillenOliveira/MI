@@ -18,7 +18,7 @@ public class User implements Comparable, Serializable{
     private UserType type;
     
     /**
-     * Contructor of the class.
+     * Constructor of the class.
      * @param password The password for the login.
      * @param name The Name of the User.
      * @param cpf The CPF of the User.
@@ -38,7 +38,7 @@ public class User implements Comparable, Serializable{
     }
     
     /**
-     * Contructor of the class.
+     * Constructor of the class.
      * @param cpf The CPF of the User.
      * @param password The password for the login.
      */
@@ -49,7 +49,7 @@ public class User implements Comparable, Serializable{
     
      
     /**
-     * Contructor of the class.
+     * Constructor of the class.
      * @param cpf The CPF of the User.
      */
     public User(String cpf){

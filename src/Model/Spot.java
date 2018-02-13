@@ -33,6 +33,12 @@ public class Spot implements Serializable{
     public int getCode() {
         return code;
     }
-    
-    
+
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public double getLongitude() {
+        return longitude;
+    } 
 }

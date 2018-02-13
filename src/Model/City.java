@@ -49,8 +49,7 @@ public class City extends Spot implements Serializable{
 
     public void setPlaceEat(ArrayList<EatPoint> placeEat) {
         this.placeEat = placeEat;
-    }
-    
+    } 
     
     /**
      * Method that overwrite the Object hashCode and create a own HashCode for the class.

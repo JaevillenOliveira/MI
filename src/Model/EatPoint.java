@@ -47,5 +47,10 @@ public class EatPoint implements Serializable{
         this.rate = rate;
     }
     
+    @Override
+    public String toString(){
+        return name;
+    }
+    
     
 }
