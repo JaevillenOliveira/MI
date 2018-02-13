@@ -12,6 +12,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -129,5 +130,25 @@ public class Facade {
     
     public void saveDataFile() throws IOException{
         controller.saveDataFile();
+    }
+    
+    public void removeCity(City city) throws EmptyHashException, InexistentEntryException{
+        controller.removeCity(city);
+    }
+    
+    public boolean removeEatPoint(City city, EatPoint eat) throws ThereNoPlaceToEat{
+        return controller.removeEatPoint(city, eat);
+    }
+    
+    public void removeInter(Intersection inter) throws EmptyHashException, InexistentEntryException{
+        controller.removeInter(inter);
+    }
+    
+    public ArrayList getEatPlaces(City city){
+        return controller.getEatPlace(city);
+    }
+    
+    public Map getMap(){
+        return controller.getMap();
     }
 }
