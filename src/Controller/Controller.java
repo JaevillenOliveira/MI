@@ -1,9 +1,11 @@
 
 package Controller;
 
+import Exceptions.ThereNoPlaceToEat;
 import Exceptions.*;
 import Model.*;
 import Util.*;
+import java.awt.geom.Line2D;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -32,6 +34,7 @@ public class Controller {
    
     private Tree users; //HashSet with the logins of the Users.
     private Graph graph; //HashSet with the cities points.
+    private Map map;
 
     /**
      * Constructor of the class
@@ -40,6 +43,7 @@ public class Controller {
         
         users = new Tree();
         graph = new Graph();
+        map = new Map(this);
         addAdmin();
     }
 
@@ -95,7 +99,7 @@ public class Controller {
      *
      * Method that encrypts password of the user
      * 
-     * @param password Password choosen by the user.
+     * @param password Password choose by the user.
      * @return the sequence that will be stored like password of the user.
      * @throws NoSuchAlgorithmException
      * @throws UnsupportedEncodingException
@@ -109,7 +113,7 @@ public class Controller {
     /**
      * Method that verifies if a User is already in Tree.
      * 
-     * @param user User that wll be verified.
+     * @param user User that will be verified.
      * @return TRUE if the User is already registered in the System.
      * @throws InexistentEntryException When the User isn't registered in the system.
      */
@@ -145,7 +149,6 @@ public class Controller {
         
         City city = new City(cityName.toUpperCase(), latitude, longitude, code);
         graph.addVertex(city); 
-        
         return city;
     }
     
@@ -176,7 +179,7 @@ public class Controller {
      * @throws InexistentEntryException If the City with this code doesn't exist.
      */
     public void addEatPoint(int code, String name, String adress, Rate rate) throws InexistentEntryException{
-        EatPoint eat = new EatPoint(name, adress);
+        EatPoint eat = new EatPoint(name.toUpperCase(), adress);
         eat.setRate(rate);
 
         City search = new City(code);
@@ -296,7 +299,6 @@ public class Controller {
         
         return realInter;
     }
-    
     
     /**
      * Method that search a trip by the name.
@@ -419,7 +421,11 @@ public class Controller {
         }
         return false;
     }
-    
+    /**
+     * Method that returns all Intersection of the System.
+     * @return A LinkedList with all Intersections of the System.
+     * @throws TheresNoInterException If there's no Intersection in System.
+     */
     public LinkedList getInter() throws TheresNoInterException{
         LinkedList<Vertex> inter;
         try{
@@ -684,33 +690,51 @@ public class Controller {
             line = br.readLine();
         }
     }
-    
+    /**
+     * Create a new File of System Data.
+     * @throws IOException 
+     */
     private void createNewFile() throws IOException{
-        File file = new File("src/Data.data");
+        File file = new File("src/Data.ser");
         file.createNewFile();
     }
-    
+    /**
+     * Load the Data File, if exists.
+     * @throws FileNotFoundException
+     * @throws IOException
+     * @throws ClassNotFoundException 
+     */
     public void loadDataFile() throws FileNotFoundException, IOException, ClassNotFoundException{
         File file;
         
-        file = new File("src/Data.data");
+        file = new File("src/Data.ser");
         if(file.exists()){
             ObjectInputStream in;
             in = new ObjectInputStream(new FileInputStream(file));
             users = (Tree)in.readObject();
             graph = (Graph)in.readObject();   
+            map = (Map)in.readObject();
+            in.close();
         }
     }
+    /**
+     * Verify if the Data File exists.
+     * @return TRUE if the File exists.
+     */
     public boolean hasFile(){
          File file;
         
-        file = new File("src/Data.data");
+        file = new File("src/Data.ser");
         return file.exists();
     }
-    
+    /**
+     * Save the System Data in the Data File.
+     * @throws IOException
+     * @throws FileNotFoundException 
+     */
     public void saveDataFile() throws IOException, FileNotFoundException{
 
-        File file = new File("src/Data.data");
+        File file = new File("src/Data.ser");
         
         if(!hasFile()){
             createNewFile();
@@ -720,6 +744,62 @@ public class Controller {
         
         out.writeObject(users);
         out.writeObject(graph);
+        out.writeObject(map);
         out.close();
+    }
+    /**
+     * Method that removes a City from System.
+     * @param city The City that will be removed.
+     * @throws EmptyHashException If there's no cities in System.
+     * @throws InexistentEntryException If the City doesn't exists.
+     */
+    public void removeCity(City city) throws EmptyHashException, InexistentEntryException{
+        graph.removeVertex(city);
+    }
+    /**
+     * Method that removes a Place to Eat from a City.
+     * @param city The City that the Place if located.
+     * @param eat The Place that will be removed.
+     * @return TRUE if the place was removed with success.
+     * @throws ThereNoPlaceToEat If the City doesn't have Eat Points.
+     */
+    public boolean removeEatPoint(City city, EatPoint eat) throws ThereNoPlaceToEat{
+        boolean boo;
+        if(city.getPlaceEat() == null){
+            throw new ThereNoPlaceToEat();
+        }
+        else{
+            boo = city.getPlaceEat().remove(eat);
+        }
+        return boo;
+    }
+    /**
+     * Method that remove an Intersection from System.
+     * @param inter The inter that will be removed.
+     * @throws EmptyHashException If there's no Inter in System.
+     * @throws InexistentEntryException If the intersection doesn't exists.
+     */
+    public void removeInter(Intersection inter) throws EmptyHashException, InexistentEntryException{
+        graph.removeVertex(inter);
+    }
+    
+    public ArrayList getEatPlace(City city){
+        if(city.getPlaceEat() != null){
+            if(city.getPlaceEat().size() > 0){
+                return city.getPlaceEat();
+            }
+        }
+        else{
+            return null;
+        }
+        return null;
+    }
+    
+    public Map getMap(){
+        return map;
+    }
+    
+    public LinkedList getRoads() throws ThereNoKeysException{
+        return graph.getAllEdges();
     }
 }
