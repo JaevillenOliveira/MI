@@ -135,7 +135,7 @@ public class Queue implements IQueue, Serializable{
 
     
     
-    private class Node{
+    private class Node implements Serializable{
 
         private Object data; 
         private Node next; 

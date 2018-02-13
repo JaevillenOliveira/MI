@@ -73,17 +73,14 @@ public class Graph implements IGraph, Serializable{
      * @param key The Key of the vertex to be removed.
      * @throws EmptyHashException If the HashSet is empty.
      * @throws InexistentEntryException If there's no vertex with the key informed in the HashSet.
-     * @throws DontHaveAdjacenciesException
      */
     @Override
-    public void removeVertex(Object key) throws EmptyHashException, InexistentEntryException, DontHaveAdjacenciesException{
-        Vertex verify = (Vertex)vertex.get(key);
+    public void removeVertex(Object key) throws EmptyHashException, InexistentEntryException{
+        Vertex verify = new Vertex(key);
         
-        if(verify.getAdjacency() == null){
-            throw new DontHaveAdjacenciesException();
-        }
+        Vertex searched = (Vertex)vertex.get(verify);
         
-        HashMap verifyMap = verify.getAdjacency();
+        HashMap verifyMap = searched.getAdjacency();
         
         Entry[] entries = verifyMap.toArray();
         
@@ -98,9 +95,14 @@ public class Graph implements IGraph, Serializable{
                 Vertex point = (Vertex)entries[i].getKey();
                 HashMap map = point.getAdjacency();
                 
-                map.remove(verify);
+                try {
+                    map.remove(searched);
+                } catch (InexistentEntryException ex) {
+                    //If enter here, it means that another Vertex doesn't have the Vertex passed by Parameter.
+                }
             }
-        }    
+        }
+        vertex.remove(searched);
     }
 
 
@@ -218,7 +220,7 @@ public class Graph implements IGraph, Serializable{
     }
 
      /**
-     * Method that returns an Iterator for the HashSet that contais all edges registered.
+     * Method that returns an Iterator for the HashSet that contains all edges registered.
      * @return An Iterator.
      */
     @Override
@@ -256,6 +258,8 @@ public class Graph implements IGraph, Serializable{
         oneVertex.getAdjacency().remove(otherVertex);
         
         otherVertex.getAdjacency().remove(oneVertex);
+        
+        edges.remove(removed);
     }
     
 

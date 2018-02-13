@@ -3,6 +3,7 @@ package Util;
 
 import Model.Entry;
 import Exceptions.*;
+import Model.Vertex;
 import java.io.Serializable;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -146,7 +147,7 @@ public class HashSet implements Serializable{
     }
     /**
      * Method that gets and return a Key.
-     * @param key Key that will ne searched in the Hash.
+     * @param key Key that will be searched in the Hash.
      * @return The key, if exists.
      * @throws InexistentEntryException When the key doesn't exist in Hash.
      */
@@ -156,7 +157,7 @@ public class HashSet implements Serializable{
     
      /**
      * Method that gets and return a Entry.
-     * @param key Key that will ne searched in the Hash.
+     * @param key Key that will be searched in the Hash.
      * @return The Entry, if exists.
      * @throws InexistentEntryException When the key doesn't exist in Hash.
      */
