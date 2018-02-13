@@ -3,6 +3,7 @@ package Util;
 
 import Model.Entry;
 import Exceptions.*;
+import Model.Vertex;
 import java.io.Serializable;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -36,7 +37,7 @@ public class HashSet implements Serializable{
         int hashCode = Math.abs(key.hashCode() % keys.length);
         int pos = this.searchPosition(hashCode, entry);
         
-        if(hasEntry(pos)){
+        if(hasEntry(pos) && !keys[pos].equals(EMPTY)){
            throw new DuplicateEntryException();
         }
         keys[pos] = entry;
@@ -104,6 +105,8 @@ public class HashSet implements Serializable{
         if(!hasEntry(hashCode)){
             throw new InexistentEntryException();
         }
+        else if(keys[hashCode].equals(EMPTY)){    
+        }
         else if(keys[hashCode].getKey().equals(key)){
             keys[hashCode] = EMPTY;
             size--;
@@ -118,7 +121,10 @@ public class HashSet implements Serializable{
      */
     private void searchAndRemove(int hashCode, Object key){
         for(int i = hashCode; keys[i] != null; i = (i + 1) % keys.length){
-            if(keys[i].getKey().equals(key)){
+            if(keys[i].equals(EMPTY)){
+                
+            }
+            else if(keys[i].getKey().equals(key)){
                 keys[i] = EMPTY;
                 size--;
             }
@@ -146,7 +152,7 @@ public class HashSet implements Serializable{
     }
     /**
      * Method that gets and return a Key.
-     * @param key Key that will ne searched in the Hash.
+     * @param key Key that will be searched in the Hash.
      * @return The key, if exists.
      * @throws InexistentEntryException When the key doesn't exist in Hash.
      */
@@ -156,7 +162,7 @@ public class HashSet implements Serializable{
     
      /**
      * Method that gets and return a Entry.
-     * @param key Key that will ne searched in the Hash.
+     * @param key Key that will be searched in the Hash.
      * @return The Entry, if exists.
      * @throws InexistentEntryException When the key doesn't exist in Hash.
      */
@@ -166,7 +172,7 @@ public class HashSet implements Serializable{
             if(keys[i] == null){
                 throw new InexistentEntryException();
             }
-            else if(keys[i].getKey().equals(EMPTY)){
+            else if(keys[i].equals(EMPTY)){
             }
             else if(keys[i].getKey().equals(key)){
                 Object ret = keys[i];
