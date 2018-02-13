@@ -32,10 +32,10 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
-import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import javax.swing.JFrame;
 
 /**
  *
@@ -61,18 +61,17 @@ public class Main extends Application{
     private static Scene tripsScene;
     private static Scene userSettingsScene;
     private static Scene startTripScene;
-
+    private static Scene citiesInfoScene;
+    private static Scene adminSettingsScene;
     /**
      * Main method.
      * @param args 
      */
     public static void main(String[] args) throws NoSuchAlgorithmException, UnsupportedEncodingException, DuplicatedDataException{
-        
         facade = new Facade();
         try{
             facade.loadDataFile();
         } catch (IOException | ClassNotFoundException ex) {
-            System.out.println("batata carne com doce");
         }
         launch(args);
     }
@@ -269,7 +268,7 @@ public class Main extends Application{
 
     }
     
-    private void drawSignUpScene(Stage primaryStage){
+    private static void drawSignUpScene(Stage primaryStage){
         
         GridPane grid = new GridPane();
         grid.setAlignment(Pos.TOP_CENTER);
@@ -370,7 +369,7 @@ public class Main extends Application{
         grid.add(footerPane, 0, 32, 2, 1);
     }
     
-    private void drawUserScene(Stage primaryStage){
+    private static void drawUserScene(Stage primaryStage){
         
         GridPane grid = new GridPane();
         grid.setAlignment(Pos.TOP_CENTER);
@@ -486,14 +485,27 @@ public class Main extends Application{
             }
         });
         
+        Button citiesInfo = new Button("Cities Infos");
+        citiesInfo.setMinWidth(200);
+        citiesInfo.setOnAction((ActionEvent event)->{
+            if(!facade.haveCities()){
+                alert("There's no Cities registered in System.");
+            }
+            else{
+                drawCitiesInfoScene(primaryStage);
+                primaryStage.setScene(citiesInfoScene);
+            }
+        });
+        
         fp.getChildren().add(createTrip);
         fp.getChildren().add(addCityToTrip);
         fp.getChildren().add(removeCityFromTrip);
         fp.getChildren().add(manageTrips);
         fp.getChildren().add(startTrip);
+        fp.getChildren().add(citiesInfo);
     }
     
-    private void drawAdminScene(Stage primaryStage){
+    private static void drawAdminScene(Stage primaryStage){
         
         GridPane grid = new GridPane();
         grid.setAlignment(Pos.TOP_CENTER);
@@ -519,6 +531,10 @@ public class Main extends Application{
         });
         
         Button settings = new Button("Settings");
+        settings.setOnAction((ActionEvent event)->{
+            drawAdminSettingsScene(primaryStage);
+            primaryStage.setScene(adminSettingsScene);
+        });
         
         for(int i = 0; i < 53; i++){
             btnBar.getButtons().add(new Text());
@@ -609,15 +625,22 @@ public class Main extends Application{
             }
         });
         
+        Button showMap = new Button("Map");
+        showMap.setMinWidth(200);
+        showMap.setOnAction((ActionEvent event)->{
+            ;
+        });
+        
         fp.getChildren().add(addCity);
         fp.getChildren().add(addInter);
         fp.getChildren().add(addRoad);
         fp.getChildren().add(addRoadBetweenTwoInter);
         fp.getChildren().add(addRoadBetweenCityAndInter);
-        fp.getChildren().add(addPlaceToEat);   
+        fp.getChildren().add(addPlaceToEat); 
+        fp.getChildren().add(showMap);
     }
     
-    private void drawAddCityScene(Stage primaryStage){
+    private static void drawAddCityScene(Stage primaryStage){
         
         GridPane grid = new GridPane();
         grid.setAlignment(Pos.TOP_CENTER);
@@ -747,7 +770,7 @@ public class Main extends Application{
         btnPane.setRight(cancel);
     }
     
-    private void drawAddInterScene(Stage primaryStage){
+    private static void drawAddInterScene(Stage primaryStage){
         
         GridPane grid = new GridPane();
         grid.setAlignment(Pos.TOP_CENTER);
@@ -863,7 +886,7 @@ public class Main extends Application{
         btnBp.setRight(cancel);
     }
     
-    private void drawAddRoadBetWeen2CitiesScene(Stage primaryStage){
+    private static void drawAddRoadBetWeen2CitiesScene(Stage primaryStage){
         
         GridPane grid = new GridPane();
         grid.setAlignment(Pos.TOP_CENTER);
@@ -974,7 +997,7 @@ public class Main extends Application{
         
     }
     
-    private void drawAddRoadBetween2InterSectionsScene(Stage primaryStage){
+    private static void drawAddRoadBetween2InterSectionsScene(Stage primaryStage){
         
         GridPane grid = new GridPane();
         grid.setAlignment(Pos.TOP_CENTER);
@@ -1082,7 +1105,7 @@ public class Main extends Application{
         
     }
     
-    private void drawAddRoadBetweenCityAndInterScene(Stage primaryStage){
+    private static void drawAddRoadBetweenCityAndInterScene(Stage primaryStage){
         
         GridPane grid = new GridPane();
         grid.setAlignment(Pos.TOP_CENTER);
@@ -1195,7 +1218,7 @@ public class Main extends Application{
         btnBP.setRight(cancel); 
     }
     
-    private void drawAddPlaceToEatScene(Stage primaryStage){
+    private static void drawAddPlaceToEatScene(Stage primaryStage){
         
         GridPane grid = new GridPane();
         grid.setAlignment(Pos.TOP_CENTER);
@@ -1307,7 +1330,7 @@ public class Main extends Application{
         btnBp.setRight(cancel);
     }
     
-    private void drawCreateTripScene(Stage primaryStage){
+    private static void drawCreateTripScene(Stage primaryStage){
         
         GridPane grid = new GridPane();
         grid.setAlignment(Pos.TOP_CENTER);
@@ -1376,7 +1399,7 @@ public class Main extends Application{
         btnBp.setRight(cancel);
     }
     
-    private void drawAddCityToTripScene(Stage primaryStage){
+    private static void drawAddCityToTripScene(Stage primaryStage){
         
         GridPane grid = new GridPane();
         grid.setAlignment(Pos.TOP_CENTER);
@@ -1514,7 +1537,7 @@ public class Main extends Application{
         
     }
     
-    private void drawRemoveCityFromTripScene(Stage primaryStage){
+    private static void drawRemoveCityFromTripScene(Stage primaryStage){
         GridPane grid = new GridPane();
         grid.setAlignment(Pos.TOP_CENTER);
         grid.setHgap(10);
@@ -1628,7 +1651,7 @@ public class Main extends Application{
         });
     }
     
-    private void drawTripScene(Stage primaryStage){
+    private static void drawTripScene(Stage primaryStage){
         
         GridPane grid = new GridPane();
         grid.setAlignment(Pos.TOP_CENTER);
@@ -1711,7 +1734,7 @@ public class Main extends Application{
         bp.setBottom(back);
     }
     
-    private void drawUserSettingsScene(Stage primaryStage){
+    private static void drawUserSettingsScene(Stage primaryStage){
         GridPane grid = new GridPane();
         grid.setAlignment(Pos.TOP_CENTER);
         grid.setHgap(10);
@@ -1815,7 +1838,7 @@ public class Main extends Application{
         
     }
     
-    private void drawStartTripScene(Stage primaryStage){
+    private static void drawStartTripScene(Stage primaryStage){
         
         GridPane grid = new GridPane();
         grid.setAlignment(Pos.TOP_CENTER);
@@ -1898,7 +1921,8 @@ public class Main extends Application{
                 } catch (TheresNoEntryException ex) {
                     //Will never enter here.
                 } catch (NoWaysException ex) {
-                    //Lel
+                    alert("There's no Way between some Cities.");
+                    primaryStage.setScene(userScene);
                 }
                 viewTrips.setVisible(true);
                 sp.setVisible(true);
@@ -1914,7 +1938,352 @@ public class Main extends Application{
         bp.setBottom(back); 
     }
     
-    private void alert(String message){
+    private static void drawCitiesInfoScene(Stage primaryStage){
+        
+        GridPane grid = new GridPane();
+        grid.setAlignment(Pos.TOP_CENTER);
+        grid.setHgap(10);
+        grid.setVgap(10);
+        grid.setPadding(new Insets(60, 60, 60, 60));
+        
+        citiesInfoScene = new Scene(grid, 720, 650);
+        
+        Label title = new Label("Cities Info");
+        title.setPadding(new Insets(0, 0, 0, 60));
+        title.setFont(Font.font("Comic Sans MS",  50));
+        title.setTextFill(Color.MEDIUMTURQUOISE);
+        grid.add(title, 0, 0, 2, 1);
+        LinkedList<City> cities = null;
+        
+        try {
+            cities = facade.getCities();
+        } catch (TheresNoCityException ex) {
+            //Will never enter here.
+        }
+        
+        Text citiesText = new Text("Cities: ");
+        grid.add(citiesText, 0, 2);
+        
+        ComboBox citiesBox = new ComboBox();
+        citiesBox.setPromptText("Cities");
+        for(City city : cities){
+            citiesBox.getItems().add(city);
+        }
+        grid.add(citiesBox, 1, 2);
+        
+        Text cityNameText = new Text("Name: ");
+        grid.add(cityNameText, 0, 5);
+        
+        Text cityName = new Text();
+        grid.add(cityName, 1, 5);
+        
+        Text cityCodeText = new Text("Code: ");
+        grid.add(cityCodeText, 0, 7);
+        
+        Text cityCode = new Text();
+        grid.add(cityCode, 1, 7);
+        
+        Text popText = new Text("Population: ");
+        grid.add(popText, 0, 9);
+        
+        Text pop = new Text();
+        grid.add(pop, 1, 9);
+        
+        Text latText = new Text("Latitude: ");
+        grid.add(latText, 0, 11);
+        
+        Text latitude = new Text();
+        grid.add(latitude, 1, 11);
+        
+        Text longiText = new Text("Longitude: ");
+        grid.add(longiText, 0, 13);
+        
+        Text longitude = new Text();
+        grid.add(longitude, 1, 13);
+        
+        ListView list = new ListView();
+        grid.add(list, 0, 15, 2, 1);
+        
+        cityNameText.setVisible(false);
+        cityCodeText.setVisible(false);
+        popText.setVisible(false);
+        latText.setVisible(false);
+        longiText.setVisible(false);
+        list.setVisible(false);
+        
+        Button ok = new Button("Ok");
+        ok.setOnAction((ActionEvent event)->{
+            if(citiesBox.getSelectionModel().getSelectedItem() == null){
+                alert("Select a City in \"City Box\".");
+            }
+            else{
+                City city = (City) citiesBox.getSelectionModel().getSelectedItem();
+                if(city.getPlaceEat() == null){
+                    list.getItems().clear();
+                    list.getItems().add("THERE'S NO PLACE TO EAT AT THIS CITY.");
+                }
+                else{
+                    list.getItems().clear();
+                    Iterator it = city.getPlaceEat().iterator();
+                    while(it.hasNext()){
+                        EatPoint eat = (EatPoint)it.next();
+                        list.getItems().add("-> Name: "+eat.getName()+"  -> Address: "+eat.getAdress()+"  -> Rating: "+eat.getRate());
+                    }
+                }
+                
+                cityName.setText("");
+                cityName.setText(city.getName());
+                
+                cityCode.setText("");
+                String code = ""+city.getCode();
+                cityCode.setText(code);
+                
+                pop.setText("");
+                String population = ""+city.getPopulation();
+                pop.setText(population);
+                
+                latitude.setText("");
+                String lat = ""+city.getLatitude();
+                latitude.setText(lat);
+
+                longitude.setText("");
+                String longi = ""+city.getLongitude();
+                longitude.setText(longi);
+                
+                
+                cityNameText.setVisible(true);
+                cityCodeText.setVisible(true);
+                popText.setVisible(true);
+                latText.setVisible(true);
+                longiText.setVisible(true);
+                list.setVisible(true);
+            }
+        });
+        grid.add(ok, 3, 2);
+        
+        Button back = new Button("Back");
+        back.setTextFill(Color.RED);
+        back.setOnAction((ActionEvent event)->{
+            primaryStage.setScene(userScene);
+        });
+        
+        grid.add(back, 4, 2);
+    }
+    
+    private static void drawAdminSettingsScene(Stage primaryStage){
+        
+        GridPane grid = new GridPane();
+        grid.setAlignment(Pos.TOP_CENTER);
+        grid.setHgap(10);
+        grid.setVgap(10);
+        grid.setPadding(new Insets(60, 60, 60, 60));
+        
+        adminSettingsScene = new Scene(grid, 720, 650);
+        
+        Label title = new Label("Settings");
+        title.setFont(Font.font("Comic Sans MS",  50));
+        title.setTextFill(Color.MEDIUMTURQUOISE);
+        grid.add(title, 0, 0, 3, 1);
+        
+        Text removeCity = new Text("Remove City: ");
+        grid.add(removeCity, 0, 2);
+        
+        ComboBox removeCityBox = new ComboBox();
+        removeCityBox.setPromptText("Cities");
+        
+        if(!facade.haveCities()){
+            removeCityBox.getItems().clear();
+            removeCityBox.getItems().add("There's no Cities.");
+        }
+        else{
+            removeCityBox.getItems().clear();
+            LinkedList<City> cities = null;
+            try {
+                cities = facade.getCities();
+            } catch (TheresNoCityException ex) {
+            }
+            for(City city : cities){
+                removeCityBox.getItems().add(city);
+            }
+        }
+        
+        grid.add(removeCityBox, 1, 2);
+        
+        Button removeCityB = new Button("RemoveCity");
+        removeCityB.setTextFill(Color.RED);
+        removeCityB.setOnAction((ActionEvent event)->{
+            if(removeCityBox.getSelectionModel().getSelectedItem() == null){
+                alert("Select a City in \"City Field\".");
+            }
+            else if(removeCityBox.getSelectionModel().getSelectedItem() instanceof String){
+                //If the User select the message that there's no Inter, this button won't do nothing.
+            }
+            else{
+                City city = (City)removeCityBox.getSelectionModel().getSelectedItem();
+                try{
+                    facade.removeCity(city);
+                    alertInfo("City removed successfully.");
+                    primaryStage.setScene(adminScene);
+                } catch (EmptyHashException | InexistentEntryException ex) {
+                     //Will never enter here.
+                }
+            }
+        });
+        grid.add(removeCityB, 2, 2);
+        
+        Text removeInter = new Text("Remove Inter: ");
+        grid.add(removeInter, 0, 4);
+        
+        ComboBox removeInterBox = new ComboBox();
+        removeInterBox.setPromptText("Inters");
+        
+        if(!facade.hasInter()){
+            removeInterBox.getItems().clear();
+            removeInterBox.getItems().add("There's no Inters.");
+        }
+        else{
+            removeInterBox.getItems().clear();
+            LinkedList<Intersection> inters = null;
+            try{
+                inters = facade.getInter();
+            } catch (TheresNoInterException ex) {
+            }
+            for(Intersection inter : inters){
+                removeInterBox.getItems().add(inter);
+            }
+        }
+        
+        grid.add(removeInterBox, 1, 4);
+        
+        Button removeInterB = new Button("RemoveInter");
+        removeInterB.setTextFill(Color.RED);
+        removeInterB.setOnAction((ActionEvent event)->{
+            if(removeInterBox.getSelectionModel().getSelectedItem() == null){
+                alert("Select an Inter in \"Inter Field\".");
+            }
+            else if(removeInterBox.getSelectionModel().getSelectedItem() instanceof String){
+                //If the User select the message that there's no Inter, this button won't do nothing.
+            }
+            else{
+                Intersection inter = (Intersection)removeInterBox.getSelectionModel().getSelectedItem();
+                try{
+                    facade.removeInter(inter);
+                    alertInfo("Inter removed successfully.");
+                    primaryStage.setScene(adminScene);
+                } catch (EmptyHashException | InexistentEntryException ex) {
+                    //Will never enter here.
+                }
+            }
+        });
+        grid.add(removeInterB, 2, 4);
+        
+        Label removePlaceToEat = new Label("RemoveEatPlace");
+        removePlaceToEat.setFont(Font.font("Comic Sans MS",  30));
+        removePlaceToEat.setTextFill(Color.MEDIUMTURQUOISE);
+        grid.add(removePlaceToEat, 0, 6, 3, 1);
+        
+        Text selectCity = new Text("Select a City: ");
+        grid.add(selectCity, 0, 8);
+        
+        ComboBox selectCityBox = new ComboBox();
+        selectCityBox.setPromptText("Cities");
+        
+        if(!facade.haveCities()){
+            selectCityBox.getItems().clear();
+            selectCityBox.getItems().add("There's no Cities.");
+        }
+        else{
+            selectCityBox.getItems().clear();
+            LinkedList<City> cities = null;
+            try {
+                cities = facade.getCities();
+            } catch (TheresNoCityException ex) {
+            }
+            for(City city : cities){
+                selectCityBox.getItems().add(city);
+            }
+        }
+        
+        grid.add(selectCityBox, 1, 8);
+        
+        Text selectEatPlace = new Text("Select a Place: ");
+        grid.add(selectEatPlace, 0, 10);
+        
+        ComboBox selectEatPlaceBox = new ComboBox();
+        selectEatPlaceBox.setPromptText("Places");
+        
+        selectEatPlaceBox.getItems().clear();
+        grid.add(selectEatPlaceBox, 1, 10);
+        
+        selectEatPlace.setVisible(false);
+        selectEatPlaceBox.setVisible(false);
+        
+        Button removeEatPlaceB = new Button("Remove");
+        removeEatPlaceB.setTextFill(Color.RED);
+        removeEatPlaceB.setVisible(false);
+        removeEatPlaceB.setOnAction((ActionEvent event)->{
+            if(selectEatPlaceBox.getSelectionModel().getSelectedItem() == null){
+                alert("Select a EatPoint in \"EatPlace Field\".");
+            }
+            else if(selectEatPlaceBox.getSelectionModel().getSelectedItem() instanceof String){
+                //If the User select the message that there's no City, this button won't do nothing.
+            }
+            else{
+                City city = (City)selectCityBox.getSelectionModel().getSelectedItem();
+                EatPoint eat = (EatPoint)selectEatPlaceBox.getSelectionModel().getSelectedItem();
+                
+                try {
+                    facade.removeEatPoint(city, eat);
+                    alertInfo("Place Removed successfully.");
+                    primaryStage.setScene(adminScene);
+                } catch (ThereNoPlaceToEat ex) {
+                    //Will never enter here.
+                }
+            }
+        });
+        
+        grid.add(removeEatPlaceB, 2, 10);
+        
+        Button selectCityB = new Button("Select");
+        selectCityB.setOnAction((ActionEvent event)->{
+            if(selectCityBox.getSelectionModel().getSelectedItem() == null){
+                alert("Select a City in \"City Field\".");
+            }
+            else if(selectCityBox.getSelectionModel().getSelectedItem() instanceof String){
+                //If the User select the message that there's no City, this button won't do nothing.
+            }
+            else{
+                City city = (City)selectCityBox.getSelectionModel().getSelectedItem();
+                ArrayList<EatPoint> eat = facade.getEatPlaces(city);
+                if(eat == null){
+                    alert("This City doesn't have Place to Eat.");
+                    selectEatPlaceBox.getItems().clear();
+                    selectEatPlaceBox.getItems().add("There's no Place to Eat.");
+                }
+                else{
+                    selectEatPlaceBox.getItems().clear();
+                    for(EatPoint eatP : eat){
+                        selectEatPlaceBox.getItems().add(eatP);
+                    }
+                    selectEatPlace.setVisible(true);
+                    selectEatPlaceBox.setVisible(true);
+                    removeEatPlaceB.setVisible(true);
+                }
+            }
+        });
+        grid.add(selectCityB, 2, 8);
+        
+        Button back = new Button("Back");
+        back.setTextFill(Color.RED);
+        back.setOnAction((ActionEvent event)->{
+            primaryStage.setScene(adminScene);
+        });
+        BorderPane bp = new BorderPane();
+        bp.setCenter(back);
+        grid.add(bp, 1, 12);
+    }
+    
+    private static void alert(String message){
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setHeaderText(null);
         alert.setTitle("Error!");
@@ -1922,11 +2291,12 @@ public class Main extends Application{
         alert.showAndWait();
     }
     
-    private void alertInfo(String message){
+    private static void alertInfo(String message){
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setHeaderText(null);
         alert.setTitle("Info!");
         alert.setContentText(message);
         alert.showAndWait();
     }
+    
 }
